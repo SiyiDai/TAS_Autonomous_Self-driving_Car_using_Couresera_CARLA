@@ -2,6 +2,8 @@
 #  Project Sources:
 https://carla.readthedocs.io/en/0.9.2/python_api_tutorial/#vehicles
 
+https://carla.readthedocs.io/en/latest/tuto_M_custom_map_overview/
+
 # Project Modules:
 
 1. System modelling and controller desing
