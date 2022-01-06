@@ -12,7 +12,7 @@ https://carla.readthedocs.io/en/0.9.2/python_api_tutorial/#vehicles
 3. Computer vision part (Segmented segmentation- Finding driveable area)
   -- Helpfull link for computer vision --> https://carla.readthedocs.io/en/0.9.2/cameras_and_sensors/#sensorcamerasemantic_segmentation
 
-4. Global Planning- Local Planning- Motion Planning
+4. Global Planning- Local Planning- behavior planning  -Motion Planning
 
 
 
