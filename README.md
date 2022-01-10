@@ -8,6 +8,9 @@ https://arijitray1993.github.io/CARLA_tutorial/
 
 https://carla.readthedocs.io/en/latest/start_introduction/
 
+
+https://www.coursera.org/learn/intro-self-driving-cars/home/welcome
+
 # Project Modules:
 
 1. System modelling and controller desing
