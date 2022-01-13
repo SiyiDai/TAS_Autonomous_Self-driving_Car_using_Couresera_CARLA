@@ -1,4 +1,9 @@
 # Group_6
+Running the carla and algorithm.
+./CarlaUE4.sh -windowed -carla-server
+
+python3 main.py (please version 3.5- 3.6)
+
 #  Project Sources:
 https://carla.readthedocs.io/en/0.9.2/python_api_tutorial/#vehicles
 
