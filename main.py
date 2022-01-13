@@ -9,22 +9,7 @@
 # Keyboard controlling for CARLA. Please refer to client_example.py for a simpler
 # and more documented example.
 
-"""
-Welcome to CARLA manual control.
 
-Use ARROWS or WASD keys for control.
-
-    W            : throttle
-    S            : brake
-    AD           : steer
-    Q            : toggle reverse
-    Space        : hand-brake
-    P            : toggle autopilot
-
-    R            : restart level
-
-STARTING in a moment...
-"""
 
 from __future__ import print_function
 
@@ -233,29 +218,7 @@ class CarlaGame(object):
 
             self._timer.lap()
 
-    """
-    
-            
-        Instead of using below control code, we will implement our control using CameraDept, CameraSemSeg, map position and lane_orientation information from above implementation
-        
-        
-    """
 
-        control = self._get_keyboard_control(pygame.key.get_pressed())
-        # Set the player position
-        if self._city_name is not None:
-            self._position = self._map.convert_to_pixel([
-                measurements.player_measurements.transform.location.x,
-                measurements.player_measurements.transform.location.y,
-                measurements.player_measurements.transform.location.z])
-            self._agent_positions = measurements.non_player_agents
-
-        if control is None:
-            self._on_new_episode()
-        elif self._enable_autopilot:
-            self.client.send_control(measurements.player_measurements.autopilot_control)
-        else:
-            self.client.send_control(control)
     
     """
     TODO:
@@ -274,7 +237,8 @@ class CarlaGame(object):
             def controlstack(self.):
                 control.steer = -
                 control.throttle  = -
-                control.brake =-´
+                control.brake =-
+                
                 
                 
             
@@ -284,30 +248,7 @@ class CarlaGame(object):
         
     """
 
-    def _get_keyboard_control(self, keys):
-        """
-        Return a VehicleControl message based on the pressed keys. Return None
-        if a new episode was requested.
-        """
-        if keys[K_r]:
-            return None
-        control = VehicleControl()
-        if keys[K_LEFT] or keys[K_a]:
-            control.steer = -1.0
-        if keys[K_RIGHT] or keys[K_d]:
-            control.steer = 1.0
-        if keys[K_UP] or keys[K_w]:
-            control.throttle = 1.0
-        if keys[K_DOWN] or keys[K_s]:
-            control.brake = 1.0
-        if keys[K_SPACE]:
-            control.hand_brake = True
-        if keys[K_q]:
-            self._is_on_reverse = not self._is_on_reverse
-        if keys[K_p]:
-            self._enable_autopilot = not self._enable_autopilot
-        control.reverse = self._is_on_reverse
-        return control
+
 
     def _print_player_measurements_map(
             self,
