@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-# Please implement code in _on_loop(self) part for autonomous driving
+
+# Copyright (c) 2017 Computer Vision Center (CVC) at the Universitat Autonoma de
+# Barcelona (UAB).
+#
+# This work is licensed under the terms of the MIT license.
+# For a copy, see <https://opensource.org/licenses/MIT>.
+
+# Keyboard controlling for CARLA. Please refer to client_example.py for a simpler
+# and more documented example.
 
 
 
@@ -9,6 +17,17 @@ import argparse
 import logging
 import random
 import time
+
+from AutonomousStack import velocity_planner
+from AutonomousStack import path_optimizer
+from AutonomousStack import object_detection
+from AutonomousStack import behavioural_planner
+##from AutonomousStack import controller2d
+from AutonomousStack import collision_checker
+from AutonomousStack import local_planner
+
+
+
 
 try:
     import pygame
@@ -214,22 +233,15 @@ class CarlaGame(object):
     
     """
     TODO:
-            def global_Planner(self,):
-            
-            def local_Planner(self.):
-                
-            def Behavior_Planner(self,):
-                
-            ??def EKF(self,):
-                
-            ??def systemModel(self, ):
-                
-            def PID(self,):
-                
-            def controlstack(self.):
-                control.steer = -
-                control.throttle  = -
-                control.brake =-
+            main :   Place all operations in to     def _on_loop(self): part for autonomous driving.
+    Global_Planner 
+    Object_Detection
+    Velocity_Planner 
+    local_planner 
+    controller2  
+    behevioural_planner 
+    path_optimiizer
+    collision_checker 
                 
                 
                 
