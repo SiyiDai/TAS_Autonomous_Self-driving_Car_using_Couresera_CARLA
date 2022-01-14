@@ -19,9 +19,9 @@ python3 main.py (please version 3.5- 3.6)
 
 **local_planner** : not integrated
 
-**controller2 **: not integrated 
+**controller2 ** : not integrated 
 
-**behevioural_planner **: not integrated 
+**behevioural_planner ** : not integrated 
 
 **path_optimiizer** : not integrated 
 
