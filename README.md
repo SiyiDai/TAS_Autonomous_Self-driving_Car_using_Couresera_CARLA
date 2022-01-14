@@ -7,12 +7,12 @@ python3 main.py (please version 3.5- 3.6)
 
 # Modules Definitions
 
-**main : ** 
+**main ** : 
 
-**Global_Planner:** not implemented
+**Global_Planner** : not implemented
   It finds sortestpath using Map of Carla simulation enviroment and outputs waypoints for agent from starting point to end point in the map... (Which should be defined in code not)
 
-**Object_Detection:** not implemented
+**Object_Detection** : not implemented
  It produces waypoints of the current obstacle(cars pedesterians)
 
 **Velocity_Planner** : not  integrated
