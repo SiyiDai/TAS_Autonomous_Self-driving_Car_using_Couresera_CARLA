@@ -7,7 +7,7 @@ python3 main.py (please version 3.5- 3.6)
 
 # Modules Definitions
 
-**main ** : 
+**main** :   Place all operations in to     def _on_loop(self): part for autonomous driving.
 
 **Global_Planner** : not implemented
   It finds sortestpath using Map of Carla simulation enviroment and outputs waypoints for agent from starting point to end point in the map... (Which should be defined in code not)
@@ -19,9 +19,9 @@ python3 main.py (please version 3.5- 3.6)
 
 **local_planner** : not integrated
 
-**controller2** : not integrated 
+**controller2 ** : not integrated 
 
-**behevioural_planner** : not integrated 
+**behevioural_planner ** : not integrated 
 
 **path_optimiizer** : not integrated 
 
