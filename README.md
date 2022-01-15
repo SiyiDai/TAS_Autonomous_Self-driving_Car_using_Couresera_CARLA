@@ -15,13 +15,16 @@ python3 main.py (please version 3.5- 3.6)
 **Object_Detection** : not implemented
  It produces waypoints of the current obstacle(cars pedesterians)
 
+
+**The below models are supposed use information of Global_planner waypoints and Object decetion waypoints.**
+
 **Velocity_Planner** : not  integrated
 
 **local_planner** : not integrated
 
-**controller2 ** : not integrated 
+**controller2** : not integrated 
 
-**behevioural_planner ** : not integrated 
+**behevioural_planner** : not integrated 
 
 **path_optimiizer** : not integrated 
 
