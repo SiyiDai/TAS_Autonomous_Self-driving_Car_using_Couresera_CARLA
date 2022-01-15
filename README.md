@@ -18,17 +18,17 @@ python3 main.py (please version 3.5- 3.6)
 
 **The below models are supposed use information of Global_planner waypoints and Object decetion waypoints.**
 
-**Velocity_Planner** : not  integrated
+**Velocity_Planner** : not  integrated, found some algorithm and code but not integrated.
 
-**local_planner** : not integrated
+**local_planner** : not integrated, found some algorithm and code but not integrated.
 
-**controller2** : not integrated 
+**controller2** : not integrated , found some algorithm and code but not integrated.
 
-**behevioural_planner** : not integrated 
+**behevioural_planner** : not integrated , found some algorithm and code but not integrated.
 
-**path_optimiizer** : not integrated 
+**path_optimiizer** : not integrated , found some algorithm and code but not integrated.
 
-**collision_checker** : not integrated
+**collision_checker** : not integrated, found some algorithm and code but not integrated.
 
 
 
