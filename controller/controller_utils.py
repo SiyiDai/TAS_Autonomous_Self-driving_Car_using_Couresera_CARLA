@@ -2,6 +2,7 @@ import numpy as np
 
 import os
 import sys
+
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 from carla.client import VehicleControl
 
@@ -34,6 +35,7 @@ def send_control_command(client, throttle, steer, brake, hand_brake=False, rever
     control.hand_brake = hand_brake
     control.reverse = reverse
     client.send_control(control)
+
 
 def create_controller_output_dir(output_folder):
     if not os.path.exists(output_folder):

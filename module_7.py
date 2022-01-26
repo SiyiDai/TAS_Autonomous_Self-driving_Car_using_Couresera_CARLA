@@ -13,6 +13,7 @@ STARTING in a moment...
 """
 from __future__ import print_function
 from __future__ import division
+from tracemalloc import start
 
 import pygame
 
@@ -31,6 +32,7 @@ import controller.controller2d as controller2d
 import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
+from trajectory_fig_helper import *
 from basic.timer import Timer
 from collision_check.get_player_collided_flag import *
 from controller.controller_utils import *
@@ -47,6 +49,7 @@ from carla.settings import CarlaSettings
 from carla.tcp import TCPConnectionError
 from carla.controller import utils
 from carla import image_converter
+
 
 def make_carla_settings(args):
     """Make a CarlaSettings object with the settings we need."""
@@ -259,109 +262,22 @@ def exec_waypoint_nav_demo(args):
         ###
         # Add 2D position / trajectory plot
         ###
-        trajectory_fig = lp_traj.plot_new_dynamic_2d_figure(
-            title="Vehicle Trajectory",
-            figsize=(FIGSIZE_X_INCHES, FIGSIZE_Y_INCHES),
-            edgecolor="black",
-            rect=[PLOT_LEFT, PLOT_BOT, PLOT_WIDTH, PLOT_HEIGHT],
-        )
+        fig_size = (FIGSIZE_X_INCHES, FIGSIZE_Y_INCHES)
+        plot_rect = [PLOT_LEFT, PLOT_BOT, PLOT_WIDTH, PLOT_HEIGHT]
 
-        trajectory_fig.set_invert_x_axis()  # Because UE4 uses left-handed
-        # coordinate system the X
-        # axis in the graph is flipped
-        trajectory_fig.set_axis_equal()  # X-Y spacing should be equal in size
+        trajectory_fig = trajectory_fig_initialize(lp_traj, fig_size, plot_rect)
 
-        # Add waypoint markers
-        trajectory_fig.add_graph(
-            "waypoints",
-            window_size=waypoints_np.shape[0],
-            x0=waypoints_np[:, 0],
-            y0=waypoints_np[:, 1],
-            linestyle="-",
-            marker="",
-            color="g",
+        trajectory_fig_set_all(
+            trajectory_fig=trajectory_fig,
+            waypoints_np=waypoints_np,
+            start_x=start_x,
+            start_y=start_y,
+            stopsign_fences=stopsign_fences,
+            parkedcar_box_pts=parkedcar_box_pts,
+            num_paths=NUM_PATHS,
+            window_size_traj=TOTAL_EPISODE_FRAMES,
+            window_size_lookahead=INTERP_MAX_POINTS_PLOT,
         )
-        # Add trajectory markers
-        trajectory_fig.add_graph(
-            "trajectory",
-            window_size=TOTAL_EPISODE_FRAMES,
-            x0=[start_x] * TOTAL_EPISODE_FRAMES,
-            y0=[start_y] * TOTAL_EPISODE_FRAMES,
-            color=[1, 0.5, 0],
-        )
-        # Add starting position marker
-        trajectory_fig.add_graph(
-            "start_pos",
-            window_size=1,
-            x0=[start_x],
-            y0=[start_y],
-            marker=11,
-            color=[1, 0.5, 0],
-            markertext="Start",
-            marker_text_offset=1,
-        )
-        # Add end position marker
-        trajectory_fig.add_graph(
-            "end_pos",
-            window_size=1,
-            x0=[waypoints_np[-1, 0]],
-            y0=[waypoints_np[-1, 1]],
-            marker="D",
-            color="r",
-            markertext="End",
-            marker_text_offset=1,
-        )
-        # Add car marker
-        trajectory_fig.add_graph("car", window_size=1, marker="s", color="b", markertext="Car", marker_text_offset=1)
-        # Add lead car information
-        trajectory_fig.add_graph(
-            "leadcar", window_size=1, marker="s", color="g", markertext="Lead Car", marker_text_offset=1
-        )
-        # Add stop sign position
-        trajectory_fig.add_graph(
-            "stopsign",
-            window_size=1,
-            x0=[stopsign_fences[0][0]],
-            y0=[stopsign_fences[0][1]],
-            marker="H",
-            color="r",
-            markertext="Stop Sign",
-            marker_text_offset=1,
-        )
-        # Add stop sign "stop line"
-        trajectory_fig.add_graph(
-            "stopsign_fence",
-            window_size=1,
-            x0=[stopsign_fences[0][0], stopsign_fences[0][2]],
-            y0=[stopsign_fences[0][1], stopsign_fences[0][3]],
-            color="r",
-        )
-
-        # Load parked car points
-        parkedcar_box_pts_np = np.array(parkedcar_box_pts)
-        trajectory_fig.add_graph(
-            "parkedcar_pts",
-            window_size=parkedcar_box_pts_np.shape[0],
-            x0=parkedcar_box_pts_np[:, 0],
-            y0=parkedcar_box_pts_np[:, 1],
-            linestyle="",
-            marker="+",
-            color="b",
-        )
-
-        # Add lookahead path
-        trajectory_fig.add_graph(
-            "selected_path",
-            window_size=INTERP_MAX_POINTS_PLOT,
-            x0=[start_x] * INTERP_MAX_POINTS_PLOT,
-            y0=[start_y] * INTERP_MAX_POINTS_PLOT,
-            color=[1, 0.5, 0.0],
-            linewidth=3,
-        )
-
-        # Add local path proposals
-        for i in range(NUM_PATHS):
-            trajectory_fig.add_graph("local_path " + str(i), window_size=200, x0=None, y0=None, color=[0.0, 0.0, 1.0])
 
         ###
         # Add 1D speed profile updater

@@ -1,5 +1,6 @@
 import math
 
+
 def get_current_pose(measurement):
     """Obtains current x,y,yaw pose from the client measurements
 

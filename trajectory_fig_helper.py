@@ -1,0 +1,158 @@
+import numpy as np
+
+
+def trajectory_fig_set_all(
+    trajectory_fig,
+    waypoints_np,
+    start_x,
+    start_y,
+    stopsign_fences,
+    parkedcar_box_pts,
+    num_paths,
+    window_size_traj,
+    window_size_lookahead,
+):
+    trajectory_fig_add_waypoints(trajectory_fig, waypoints_np)
+    trajectory_fig_add_trajectory_markers(trajectory_fig, start_x, start_y, window_size=window_size_traj)
+    trajectory_fig_add_starting_position(trajectory_fig, start_x, start_y)
+    trajectory_fig_add_end_position(trajectory_fig, waypoints_np)
+    trajectory_fig_add_car_marker(trajectory_fig)
+    trajectory_fig_add_lead_car_information(trajectory_fig)
+    trajectory_fig_add_stop_sign(trajectory_fig, stopsign_fences)
+    trajectory_fig_add_parked_car_points(trajectory_fig, parkedcar_box_pts)
+    trajectory_fig_add_lookahead_path(trajectory_fig, start_x, start_y, window_size=window_size_lookahead)
+    trajectory_fig_add_local_path_proposals(trajectory_fig, num_paths)
+
+
+def trajectory_fig_initialize(lp_traj, fig_size, plot_rect):
+    trajectory_fig = lp_traj.plot_new_dynamic_2d_figure(
+        title="Vehicle Trajectory",
+        figsize=fig_size,
+        edgecolor="black",
+        rect=plot_rect,
+    )
+    trajectory_fig.set_invert_x_axis()  # Because UE4 uses left-handed
+    # coordinate system the X
+    # axis in the graph is flipped
+    trajectory_fig.set_axis_equal()  # X-Y spacing should be equal in size
+    return trajectory_fig
+
+
+def trajectory_fig_add_car_marker(trajectory_fig):
+    # Add car marker
+    trajectory_fig.add_graph("car", window_size=1, marker="s", color="b", markertext="Car", marker_text_offset=1)
+
+
+def trajectory_fig_add_lead_car_information(trajectory_fig):
+    # Add lead car information
+    trajectory_fig.add_graph(
+        "leadcar", window_size=1, marker="s", color="g", markertext="Lead Car", marker_text_offset=1
+    )
+
+
+def trajectory_fig_add_parked_car_points(trajectory_fig, parkedcar_box_pts):
+    # Load parked car points
+    parkedcar_box_pts_np = np.array(parkedcar_box_pts)
+    trajectory_fig.add_graph(
+        "parkedcar_pts",
+        window_size=parkedcar_box_pts_np.shape[0],
+        x0=parkedcar_box_pts_np[:, 0],
+        y0=parkedcar_box_pts_np[:, 1],
+        linestyle="",
+        marker="+",
+        color="b",
+    )
+
+
+def trajectory_fig_add_local_path_proposals(trajectory_fig, num_paths):
+    # Add local path proposals
+    for i in range(num_paths):
+        trajectory_fig.add_graph("local_path " + str(i), window_size=200, x0=None, y0=None, color=[0.0, 0.0, 1.0])
+
+
+def trajectory_fig_add_lookahead_path(trajectory_fig, start_x, start_y, window_size):
+    # Add lookahead path
+    trajectory_fig.add_graph(
+        "selected_path",
+        window_size=window_size,
+        x0=[start_x] * window_size,
+        y0=[start_y] * window_size,
+        color=[1, 0.5, 0.0],
+        linewidth=3,
+    )
+
+
+def trajectory_fig_add_waypoints(trajectory_fig, waypoints_np):
+    # Add waypoint markers
+    trajectory_fig.add_graph(
+        "waypoints",
+        window_size=waypoints_np.shape[0],
+        x0=waypoints_np[:, 0],
+        y0=waypoints_np[:, 1],
+        linestyle="-",
+        marker="",
+        color="g",
+    )
+
+
+def trajectory_fig_add_trajectory_markers(trajectory_fig, start_x, start_y, window_size):
+    # Add trajectory markers
+    trajectory_fig.add_graph(
+        "trajectory",
+        window_size=window_size,
+        x0=[start_x] * window_size,
+        y0=[start_y] * window_size,
+        color=[1, 0.5, 0],
+    )
+
+
+def trajectory_fig_add_end_position(trajectory_fig, waypoints_np):
+    # Add end position marker
+    end_x = waypoints_np[-1, 0]
+    end_y = waypoints_np[-1, 1]
+    trajectory_fig.add_graph(
+        "end_pos",
+        window_size=1,
+        x0=[end_x],
+        y0=[end_y],
+        marker="D",
+        color="r",
+        markertext="End",
+        marker_text_offset=1,
+    )
+
+
+def trajectory_fig_add_starting_position(trajectory_fig, start_x, start_y):
+    # Add starting position marker
+    trajectory_fig.add_graph(
+        "start_pos",
+        window_size=1,
+        x0=[start_x],
+        y0=[start_y],
+        marker=11,
+        color=[1, 0.5, 0],
+        markertext="Start",
+        marker_text_offset=1,
+    )
+
+
+def trajectory_fig_add_stop_sign(trajectory_fig, stopsign_fences):
+    # Add stop sign position
+    trajectory_fig.add_graph(
+        "stopsign",
+        window_size=1,
+        x0=[stopsign_fences[0][0]],
+        y0=[stopsign_fences[0][1]],
+        marker="H",
+        color="r",
+        markertext="Stop Sign",
+        marker_text_offset=1,
+    )
+    # Add stop sign "stop line"
+    trajectory_fig.add_graph(
+        "stopsign_fence",
+        window_size=1,
+        x0=[stopsign_fences[0][0], stopsign_fences[0][2]],
+        y0=[stopsign_fences[0][1], stopsign_fences[0][3]],
+        color="r",
+    )
