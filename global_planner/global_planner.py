@@ -13,7 +13,7 @@ import numpy as np
 import networkx as nx
 
 import carla
-from local_planner import RoadOption
+from local_planner.local_planner import RoadOption
 from misc import vector
 
 

@@ -10,9 +10,11 @@
 from enum import Enum
 import numpy as np
 import copy
-import path_optimizer
-import collision_checker
-import velocity_planner
+
+import collision_check.collision_checker as collision_checker
+import local_planner.velocity_planner as velocity_planner
+import local_planner.path_optimizer as path_optimizer
+
 from math import sin, cos, pi, sqrt
 
 

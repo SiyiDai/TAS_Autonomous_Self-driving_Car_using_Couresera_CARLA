@@ -3,7 +3,7 @@ import csv
 import skimage
 from scipy import ndimage
 
-from depth_to_pointcloud import depth_to_pointcloud
+from object_detection.depth_to_pointcloud import depth_to_pointcloud
 from carla import image_converter
 
 

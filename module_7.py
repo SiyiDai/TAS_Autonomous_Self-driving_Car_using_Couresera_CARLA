@@ -27,16 +27,16 @@ import math
 import numpy as np
 import csv
 import matplotlib.pyplot as plt
-import controller2d
+import controller.controller2d as controller2d
 import configparser
-import local_planner
-import behavioural_planner
-from timer import Timer
-from get_player_collided_flag import *
-from controller_utils import *
-from get_pos import *
-from config_params import *
-from object_detection import *
+import local_planner.local_planner as local_planner
+import local_planner.behavioural_planner as behavioural_planner
+from basic.timer import Timer
+from collision_check.get_player_collided_flag import *
+from controller.controller_utils import *
+from basic.get_pos import *
+from basic.config_params import *
+from object_detection.object_detection import *
 
 # Script level imports
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
