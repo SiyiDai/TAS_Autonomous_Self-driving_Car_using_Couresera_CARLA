@@ -32,6 +32,7 @@ import controller.controller2d as controller2d
 import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
+from load_stopsign import *
 from trajectory_fig_helper import *
 from basic.timer import Timer
 from collision_check.get_player_collided_flag import *
@@ -123,33 +124,8 @@ def exec_waypoint_nav_demo(args):
 
         # Set options
         live_plot_timer = Timer(live_plot_period)
-
-        #############################################
-        # Load stop sign and parked vehicle parameters
-        # Convert to input params for LP
-        #############################################
-        # Stop sign (X(m), Y(m), Z(m), Yaw(deg))
-        stopsign_data = None
-        stopsign_fences = []  # [x0, y0, x1, y1]
-        with open(C4_STOP_SIGN_FILE, "r") as stopsign_file:
-            next(stopsign_file)  # skip header
-            stopsign_reader = csv.reader(stopsign_file, delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
-            stopsign_data = list(stopsign_reader)
-            # convert to rad
-            for i in range(len(stopsign_data)):
-                stopsign_data[i][3] = stopsign_data[i][3] * np.pi / 180.0
-
-        # obtain stop sign fence points for LP
-        for i in range(len(stopsign_data)):
-            x = stopsign_data[i][0]
-            y = stopsign_data[i][1]
-            z = stopsign_data[i][2]
-            yaw = stopsign_data[i][3] + np.pi / 2.0  # add 90 degrees for fence
-            spos = np.array([[0, 0], [0, C4_STOP_SIGN_FENCELENGTH]])
-            rotyaw = np.array([[np.cos(yaw), np.sin(yaw)], [-np.sin(yaw), np.cos(yaw)]])
-            spos_shift = np.array([[x, x], [y, y]])
-            spos = np.add(np.matmul(rotyaw, spos), spos_shift)
-            stopsign_fences.append([spos[0, 0], spos[1, 0], spos[0, 1], spos[1, 1]])
+        stopsign_data = load_stopsign(stopsign_file = C4_STOP_SIGN_FILE)
+        stopsign_fences= convert_stopsign_lp(stopsign_data, stopsign_fencelength =C4_STOP_SIGN_FENCELENGTH)
 
         # Parked car(s) (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
         parkedcar_data = None
