@@ -1,7 +1,11 @@
-from carla.image_converter import depth_to_array
+import sys
+import os
+sys.path.append(os.path.abspath(sys.path[0] + "/.."))
+
 import math
 import numpy
 from numpy.matlib import repmat
+from carla.image_converter import depth_to_array
 
 
 def depth_to_pointcloud(image, color=None, max_depth=0.9):

@@ -14,6 +14,9 @@ STARTING in a moment...
 from __future__ import print_function
 from __future__ import division
 
+import pygame
+
+
 # System level imports
 import sys
 import os
@@ -28,95 +31,22 @@ import controller2d
 import configparser
 import local_planner
 import behavioural_planner
+from timer import Timer
+from get_player_collided_flag import *
+from controller_utils import *
+from get_pos import *
+from config_params import *
+from object_detection import *
 
 # Script level imports
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 import live_plotter as lv  # Custom live plotting library
 from carla import sensor
-from carla.client import make_carla_client, VehicleControl
+from carla.client import make_carla_client
 from carla.settings import CarlaSettings
 from carla.tcp import TCPConnectionError
 from carla.controller import utils
-
-"""
-Configurable params
-"""
-ITER_FOR_SIM_TIMESTEP = 10  # no. iterations to compute approx sim timestep
-WAIT_TIME_BEFORE_START = 1.00  # game seconds (time before controller start)
-TOTAL_RUN_TIME = 100.00  # game seconds (total runtime before sim end)
-TOTAL_FRAME_BUFFER = 300  # number of frames to buffer after total runtime
-NUM_PEDESTRIANS = 0  # total number of pedestrians to spawn 0
-NUM_VEHICLES = 2  # total number of vehicles to spawn 2
-SEED_PEDESTRIANS = 0  # seed for pedestrian spawn randomizer 0
-SEED_VEHICLES = 0  # seed for vehicle spawn randomizer 0
-CLIENT_WAIT_TIME = 3  # wait time for client before starting episode
-# used to make sure the server loads
-# consistently
-
-WEATHERID = {
-    "DEFAULT": 0,
-    "CLEARNOON": 1,
-    "CLOUDYNOON": 2,
-    "WETNOON": 3,
-    "WETCLOUDYNOON": 4,
-    "MIDRAINYNOON": 5,
-    "HARDRAINNOON": 6,
-    "SOFTRAINNOON": 7,
-    "CLEARSUNSET": 8,
-    "CLOUDYSUNSET": 9,
-    "WETSUNSET": 10,
-    "WETCLOUDYSUNSET": 11,
-    "MIDRAINSUNSET": 12,
-    "HARDRAINSUNSET": 13,
-    "SOFTRAINSUNSET": 14,
-}
-SIMWEATHER = WEATHERID["DEFAULT"]  # set simulation weather
-
-PLAYER_START_INDEX = 1  # spawn index for player (keep to 1)
-FIGSIZE_X_INCHES = 8  # x figure size of feedback in inches
-FIGSIZE_Y_INCHES = 8  # y figure size of feedback in inches
-PLOT_LEFT = 0.1  # in fractions of figure width and height
-PLOT_BOT = 0.1
-PLOT_WIDTH = 0.8
-PLOT_HEIGHT = 0.8
-
-WAYPOINTS_FILENAME = "course4_waypoints.txt"  # waypoint file to load
-DIST_THRESHOLD_TO_LAST_WAYPOINT = 2.0  # some distance from last position before
-# simulation ends
-
-# Planning Constants
-NUM_PATHS = 7
-BP_LOOKAHEAD_BASE = 10.0  # 8m
-BP_LOOKAHEAD_TIME = 2.0  # s
-PATH_OFFSET = 1.5  # m
-CIRCLE_OFFSETS = [-1.0, 1.0, 3.0]  # m
-CIRCLE_RADII = [1.5, 1.5, 1.5]  # m
-TIME_GAP = 1.0  # s
-PATH_SELECT_WEIGHT = 10
-A_MAX = 2.5  # m/s^2  1.5
-SLOW_SPEED = 2.0  # m/s
-STOP_LINE_BUFFER = 3.5  # m
-LEAD_VEHICLE_LOOKAHEAD = 20.0  # m
-LP_FREQUENCY_DIVISOR = 2  # Frequency divisor to make the
-# local planner operate at a lower
-# frequency than the controller
-# (which operates at the simulation
-# frequency). Must be a natural
-# number.
-
-# Course 4 specific parameters
-C4_STOP_SIGN_FILE = "stop_sign_params.txt"
-C4_STOP_SIGN_FENCELENGTH = 5  # m
-C4_PARKED_CAR_FILE = "parked_vehicle_params.txt"
-
-# Path interpolation parameters
-INTERP_MAX_POINTS_PLOT = 10  # number of points used for displaying
-# selected path
-INTERP_DISTANCE_RES = 0.01  # distance between interpolated points
-
-# controller output directory
-CONTROLLER_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "/controller_output/"
-
+from carla import image_converter
 
 def make_carla_settings(args):
     """Make a CarlaSettings object with the settings we need."""
@@ -140,166 +70,6 @@ def make_carla_settings(args):
         QualityLevel=args.quality_level,
     )
     return settings
-
-
-class Timer(object):
-    """Timer Class
-
-    The steps are used to calculate FPS, while the lap or seconds since lap is
-    used to compute elapsed time.
-    """
-
-    def __init__(self, period):
-        self.step = 0
-        self._lap_step = 0
-        self._lap_time = time.time()
-        self._period_for_lap = period
-
-    def tick(self):
-        self.step += 1
-
-    def has_exceeded_lap_period(self):
-        if self.elapsed_seconds_since_lap() >= self._period_for_lap:
-            return True
-        else:
-            return False
-
-    def lap(self):
-        self._lap_step = self.step
-        self._lap_time = time.time()
-
-    def ticks_per_second(self):
-        return float(self.step - self._lap_step) / self.elapsed_seconds_since_lap()
-
-    def elapsed_seconds_since_lap(self):
-        return time.time() - self._lap_time
-
-
-def get_current_pose(measurement):
-    """Obtains current x,y,yaw pose from the client measurements
-
-    Obtains the current x,y, and yaw pose from the client measurements.
-
-    Args:
-        measurement: The CARLA client measurements (from read_data())
-
-    Returns: (x, y, yaw)
-        x: X position in meters
-        y: Y position in meters
-        yaw: Yaw position in radians
-    """
-    x = measurement.player_measurements.transform.location.x
-    y = measurement.player_measurements.transform.location.y
-    yaw = math.radians(measurement.player_measurements.transform.rotation.yaw)
-
-    return (x, y, yaw)
-
-
-def get_start_pos(scene):
-    """Obtains player start x,y, yaw pose from the scene
-
-    Obtains the player x,y, and yaw pose from the scene.
-
-    Args:
-        scene: The CARLA scene object
-
-    Returns: (x, y, yaw)
-        x: X position in meters
-        y: Y position in meters
-        yaw: Yaw position in radians
-    """
-    x = scene.player_start_spots[0].location.x
-    y = scene.player_start_spots[0].location.y
-    yaw = math.radians(scene.player_start_spots[0].rotation.yaw)
-
-    return (x, y, yaw)
-
-
-def get_player_collided_flag(measurement, prev_collision_vehicles, prev_collision_pedestrians, prev_collision_other):
-    """Obtains collision flag from player. Check if any of the three collision
-    metrics (vehicles, pedestrians, others) from the player are true, if so the
-    player has collided to something.
-
-    Note: From the CARLA documentation:
-
-    "Collisions are not annotated if the vehicle is not moving (<1km/h) to avoid
-    annotating undesired collision due to mistakes in the AI of non-player
-    agents."
-    """
-    player_meas = measurement.player_measurements
-    current_collision_vehicles = player_meas.collision_vehicles
-    current_collision_pedestrians = player_meas.collision_pedestrians
-    current_collision_other = player_meas.collision_other
-
-    collided_vehicles = current_collision_vehicles > prev_collision_vehicles
-    collided_pedestrians = current_collision_pedestrians > prev_collision_pedestrians
-    collided_other = current_collision_other > prev_collision_other
-
-    return (
-        collided_vehicles or collided_pedestrians or collided_other,
-        current_collision_vehicles,
-        current_collision_pedestrians,
-        current_collision_other,
-    )
-
-
-def send_control_command(client, throttle, steer, brake, hand_brake=False, reverse=False):
-    """Send control command to CARLA client.
-
-    Send control command to CARLA client.
-
-    Args:
-        client: The CARLA client object
-        throttle: Throttle command for the sim car [0, 1]
-        steer: Steer command for the sim car [-1, 1]
-        brake: Brake command for the sim car [0, 1]
-        hand_brake: Whether the hand brake is engaged
-        reverse: Whether the sim car is in the reverse gear
-    """
-    control = VehicleControl()
-    # Clamp all values within their limits
-    steer = np.fmax(np.fmin(steer, 1.0), -1.0)
-    throttle = np.fmax(np.fmin(throttle, 1.0), 0)
-    brake = np.fmax(np.fmin(brake, 1.0), 0)
-
-    control.steer = steer
-    control.throttle = throttle
-    control.brake = brake
-    control.hand_brake = hand_brake
-    control.reverse = reverse
-    client.send_control(control)
-
-
-def create_controller_output_dir(output_folder):
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-
-def store_trajectory_plot(graph, fname):
-    """Store the resulting plot."""
-    create_controller_output_dir(CONTROLLER_OUTPUT_FOLDER)
-
-    file_name = os.path.join(CONTROLLER_OUTPUT_FOLDER, fname)
-    graph.savefig(file_name)
-
-
-def write_trajectory_file(x_list, y_list, v_list, t_list, collided_list):
-    create_controller_output_dir(CONTROLLER_OUTPUT_FOLDER)
-    file_name = os.path.join(CONTROLLER_OUTPUT_FOLDER, "trajectory.txt")
-
-    with open(file_name, "w") as trajectory_file:
-        for i in range(len(x_list)):
-            trajectory_file.write(
-                "%3.3f, %3.3f, %2.3f, %6.3f %r\n" % (x_list[i], y_list[i], v_list[i], t_list[i], collided_list[i])
-            )
-
-
-def write_collisioncount_file(collided_list):
-    create_controller_output_dir(CONTROLLER_OUTPUT_FOLDER)
-    file_name = os.path.join(CONTROLLER_OUTPUT_FOLDER, "collision_count.txt")
-
-    with open(file_name, "w") as collision_file:
-        collision_file.write(str(sum(collided_list)))
 
 
 def exec_waypoint_nav_demo(args):
