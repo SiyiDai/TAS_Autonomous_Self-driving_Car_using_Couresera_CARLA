@@ -10,13 +10,14 @@
 import numpy as np
 from math import sin, cos, pi, sqrt
 
+
 class VelocityPlanner:
     def __init__(self, time_gap, a_max, slow_speed, stop_line_buffer):
-        self._time_gap         = time_gap
-        self._a_max            = a_max
-        self._slow_speed       = slow_speed
+        self._time_gap = time_gap
+        self._a_max = a_max
+        self._slow_speed = slow_speed
         self._stop_line_buffer = stop_line_buffer
-        self._prev_trajectory  = [[0.0, 0.0, 0.0]]
+        self._prev_trajectory = [[0.0, 0.0, 0.0]]
 
     # Computes an open loop speed estimate based on the previously planned
     # trajectory, and the timestep since the last planning cycle.
@@ -30,9 +31,10 @@ class VelocityPlanner:
         if timestep < 1e-4:
             return self._prev_trajectory[0][2]
 
-        for i in range(len(self._prev_trajectory)-1):
-            distance_step = np.linalg.norm(np.subtract(self._prev_trajectory[i+1][0:2],
-                                                       self._prev_trajectory[i][0:2]))
+        for i in range(len(self._prev_trajectory) - 1):
+            distance_step = np.linalg.norm(
+                np.subtract(self._prev_trajectory[i + 1][0:2], self._prev_trajectory[i][0:2])
+            )
             velocity = 0.001 if self._prev_trajectory[i][2] == 0 else self._prev_trajectory[i][2]
             time_delta = distance_step / velocity
 
@@ -41,7 +43,7 @@ class VelocityPlanner:
             # of the next step to estimate the open loop velocity.
             if time_delta > timestep:
                 v1 = self._prev_trajectory[i][2]
-                v2 = self._prev_trajectory[i+1][2]
+                v2 = self._prev_trajectory[i + 1][2]
                 v_delta = v2 - v1
                 interpolation_ratio = timestep / time_delta
                 return v1 + interpolation_ratio * v_delta
@@ -71,9 +73,9 @@ class VelocityPlanner:
     # for simplicity this project can be implemented by isolating each case.
     # For all profiles, the required acceleration is given by self._a_max.
     # Recall that the path is of the form [x_points, y_points, t_points].
-    def compute_velocity_profile(self, path, desired_speed, ego_state,
-                                 closed_loop_speed, decelerate_to_stop,
-                                 lead_car_state, follow_lead_vehicle):
+    def compute_velocity_profile(
+        self, path, desired_speed, ego_state, closed_loop_speed, decelerate_to_stop, lead_car_state, follow_lead_vehicle
+    ):
         """Computes the velocity profile for the local planner path.
 
         args:
@@ -133,8 +135,7 @@ class VelocityPlanner:
         # If we need to follow the lead vehicle, make sure we decelerate to its
         # speed by the time we reach the time gap point.
         elif follow_lead_vehicle:
-            profile = self.follow_profile(path, start_speed, desired_speed,
-                                          lead_car_state)
+            profile = self.follow_profile(path, start_speed, desired_speed, lead_car_state)
 
         # Otherwise, compute the profile to reach our desired speed.
         else:
@@ -144,9 +145,11 @@ class VelocityPlanner:
         # This prevents the myopic controller from getting stuck at the zeroth
         # state.
         if len(profile) > 1:
-            interpolated_state = [(profile[1][0] - profile[0][0]) * 0.1 + profile[0][0],
-                                  (profile[1][1] - profile[0][1]) * 0.1 + profile[0][1],
-                                  (profile[1][2] - profile[0][2]) * 0.1 + profile[0][2]]
+            interpolated_state = [
+                (profile[1][0] - profile[0][0]) * 0.1 + profile[0][0],
+                (profile[1][1] - profile[0][1]) * 0.1 + profile[0][1],
+                (profile[1][2] - profile[0][2]) * 0.1 + profile[0][2],
+            ]
             del profile[0]
             profile.insert(0, interpolated_state)
 
@@ -191,8 +194,8 @@ class VelocityPlanner:
                     profile[5]:
                     returns [x5, y5, v5] (6th point in the local path)
         """
-        profile          = []
-        slow_speed       = self._slow_speed
+        profile = []
+        slow_speed = self._slow_speed
         stop_line_buffer = self._stop_line_buffer
 
         # Using d = (v_f^2 - v_i^2) / (2 * a), compute the two distances
@@ -204,16 +207,16 @@ class VelocityPlanner:
 
         # compute total path length
         path_length = 0.0
-        for i in range(len(path[0])-1):
-            path_length += np.linalg.norm([path[0][i+1] - path[0][i],
-                                           path[1][i+1] - path[1][i]])
+        for i in range(len(path[0]) - 1):
+            path_length += np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
 
         stop_index = len(path[0]) - 1
         temp_dist = 0.0
         # Compute the index at which we should stop.
         while (stop_index > 0) and (temp_dist < stop_line_buffer):
-            temp_dist += np.linalg.norm([path[0][stop_index] - path[0][stop_index-1],
-                                         path[1][stop_index] - path[1][stop_index-1]])
+            temp_dist += np.linalg.norm(
+                [path[0][stop_index] - path[0][stop_index - 1], path[1][stop_index] - path[1][stop_index - 1]]
+            )
             stop_index -= 1
 
         # If the brake distance exceeds the length of the path, then we cannot
@@ -229,8 +232,7 @@ class VelocityPlanner:
             # The rest of the speeds should be a linear ramp from zero,
             # decelerating at -self._a_max.
             for i in reversed(range(stop_index)):
-                dist = np.linalg.norm([path[0][i+1] - path[0][i],
-                                       path[1][i+1] - path[1][i]])
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vi = calc_final_speed(vf, -self._a_max, dist)
                 # We don't want to have points above the starting speed
                 # along our profile, so clamp to start_speed.
@@ -254,8 +256,9 @@ class VelocityPlanner:
             temp_dist = 0.0
             # Compute the index at which to start braking down to zero.
             while (brake_index > 0) and (temp_dist < brake_distance):
-                temp_dist += np.linalg.norm([path[0][brake_index] - path[0][brake_index-1],
-                                             path[1][brake_index] - path[1][brake_index-1]])
+                temp_dist += np.linalg.norm(
+                    [path[0][brake_index] - path[0][brake_index - 1], path[1][brake_index] - path[1][brake_index - 1]]
+                )
                 brake_index -= 1
 
             # Compute the index to stop decelerating to the slow speed.  This is
@@ -265,8 +268,9 @@ class VelocityPlanner:
             decel_index = 0
             temp_dist = 0.0
             while (decel_index < brake_index) and (temp_dist < decel_distance):
-                temp_dist += np.linalg.norm([path[0][decel_index+1] - path[0][decel_index],
-                                             path[1][decel_index+1] - path[1][decel_index]])
+                temp_dist += np.linalg.norm(
+                    [path[0][decel_index + 1] - path[0][decel_index], path[1][decel_index + 1] - path[1][decel_index]]
+                )
                 decel_index += 1
 
             # The speeds from the start to decel_index should be a linear ramp
@@ -274,8 +278,7 @@ class VelocityPlanner:
             # -self._a_max.
             vi = start_speed
             for i in range(decel_index):
-                dist = np.linalg.norm([path[0][i+1] - path[0][i],
-                                       path[1][i+1] - path[1][i]])
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 # We don't want to overshoot our slow_speed, so clamp it to that.
                 if vf < slow_speed:
@@ -292,8 +295,7 @@ class VelocityPlanner:
             # linear ramp from the slow_speed down to the 0, decelerating at
             # -self._a_max.
             for i in range(brake_index, stop_index):
-                dist = np.linalg.norm([path[0][i+1] - path[0][i],
-                                       path[1][i+1] - path[1][i]])
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 profile.append([path[0][i], path[1][i], vi])
                 vi = vf
@@ -347,10 +349,9 @@ class VelocityPlanner:
         profile = []
         # Find the closest point to the lead vehicle on our planned path.
         min_index = len(path[0]) - 1
-        min_dist = float('Inf')
+        min_dist = float("Inf")
         for i in range(len(path)):
-            dist = np.linalg.norm([path[0][i] - lead_car_state[0],
-                                   path[1][i] - lead_car_state[1]])
+            dist = np.linalg.norm([path[0][i] - lead_car_state[0], path[1][i] - lead_car_state[1]])
             if dist < min_dist:
                 min_dist = dist
                 min_index = i
@@ -363,8 +364,12 @@ class VelocityPlanner:
         distance = min_dist
         distance_gap = desired_speed * self._time_gap
         while (ramp_end_index > 0) and (distance > distance_gap):
-            distance += np.linalg.norm([path[0][ramp_end_index] - path[0][ramp_end_index-1],
-                                        path[1][ramp_end_index] - path[1][ramp_end_index-1]])
+            distance += np.linalg.norm(
+                [
+                    path[0][ramp_end_index] - path[0][ramp_end_index - 1],
+                    path[1][ramp_end_index] - path[1][ramp_end_index - 1],
+                ]
+            )
             ramp_end_index -= 1
 
         # We now need to reach the ego vehicle's speed by the time we reach the
@@ -379,8 +384,7 @@ class VelocityPlanner:
         # end of the ramp.
         vi = start_speed
         for i in range(ramp_end_index + 1):
-            dist = np.linalg.norm([path[0][i+1] - path[0][i],
-                                   path[1][i+1] - path[1][i]])
+            dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
             if desired_speed < start_speed:
                 vf = calc_final_speed(vi, -self._a_max, dist)
             else:
@@ -441,16 +445,19 @@ class VelocityPlanner:
         # At the end of the ramp, we will maintain our final speed.
         ramp_end_index = 0
         distance = 0.0
-        while (ramp_end_index < len(path[0])-1) and (distance < accel_distance):
-            distance += np.linalg.norm([path[0][ramp_end_index+1] - path[0][ramp_end_index],
-                                        path[1][ramp_end_index+1] - path[1][ramp_end_index]])
+        while (ramp_end_index < len(path[0]) - 1) and (distance < accel_distance):
+            distance += np.linalg.norm(
+                [
+                    path[0][ramp_end_index + 1] - path[0][ramp_end_index],
+                    path[1][ramp_end_index + 1] - path[1][ramp_end_index],
+                ]
+            )
             ramp_end_index += 1
 
         # Here we will actually compute the velocities along the ramp.
         vi = start_speed
         for i in range(ramp_end_index):
-            dist = np.linalg.norm([path[0][i+1] - path[0][i],
-                                   path[1][i+1] - path[1][i]])
+            dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
             if desired_speed < start_speed:
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 # clamp speed to desired speed
@@ -467,10 +474,11 @@ class VelocityPlanner:
 
         # If the ramp is over, then for the rest of the profile we should
         # track the desired speed.
-        for i in range(ramp_end_index+1, len(path[0])):
+        for i in range(ramp_end_index + 1, len(path[0])):
             profile.append([path[0][i], path[1][i], desired_speed])
 
         return profile
+
 
 ######################################################
 ######################################################
@@ -498,6 +506,7 @@ def calc_distance(v_i, v_f, a):
     d = (v_f * v_f - v_i * v_i) / (2 * a)
     return d
     # ------------------------------------------------------------------
+
 
 ######################################################
 ######################################################

@@ -11,11 +11,12 @@ import numpy as np
 import scipy.spatial
 from math import sin, cos, pi, sqrt
 
+
 class CollisionChecker:
     def __init__(self, circle_offsets, circle_radii, weight):
         self._circle_offsets = circle_offsets
-        self._circle_radii   = circle_radii
-        self._weight         = weight
+        self._circle_radii = circle_radii
+        self._weight = weight
 
     ######################################################
     ######################################################
@@ -56,7 +57,7 @@ class CollisionChecker:
         collision_check_array = np.zeros(len(paths), dtype=bool)
         for i in range(len(paths)):
             collision_free = True
-            path           = paths[i]
+            path = paths[i]
 
             # Iterate over the points in the path.
             for j in range(len(path[0])):
@@ -150,7 +151,7 @@ class CollisionChecker:
                 navigate with.
         """
         best_index = None
-        best_score = float('Inf')
+        best_score = float("Inf")
         for i in range(len(paths)):
             # Handle the case of collision-free paths.
             if collision_check_array[i]:
@@ -160,8 +161,7 @@ class CollisionChecker:
                 # A lower score implies a more suitable path.
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
-                score = np.linalg.norm([goal_state[0] - paths[i][0][-1],
-                                        goal_state[1] - paths[i][1][-1]])
+                score = np.linalg.norm([goal_state[0] - paths[i][0][-1], goal_state[1] - paths[i][1][-1]])
                 # --------------------------------------------------------------
 
                 # Compute the "proximity to other colliding paths" score and
@@ -174,14 +174,14 @@ class CollisionChecker:
                         if not collision_check_array[j]:
                             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                             # --------------------------------------------------
-                            score += self._weight * np.linalg.norm([paths[i][0][-1] - paths[j][0][-1],
-                                                                    paths[i][1][-1] - paths[j][1][-1]])
+                            score += self._weight * np.linalg.norm(
+                                [paths[i][0][-1] - paths[j][0][-1], paths[i][1][-1] - paths[j][1][-1]]
+                            )
                             # --------------------------------------------------
-
 
             # Handle the case of colliding paths.
             else:
-                score = float('Inf')
+                score = float("Inf")
 
             # Set the best index to be the path index with the lowest score
             if score < best_score:

@@ -15,30 +15,37 @@ import collision_checker
 import velocity_planner
 from math import sin, cos, pi, sqrt
 
+
 class RoadOption(Enum):
     """
     RoadOption represents the possible topological configurations when moving from a segment of lane to other.
     """
+
     VOID = -1
     LEFT = 1
     RIGHT = 2
     STRAIGHT = 3
     LANEFOLLOW = 4
 
+
 class LocalPlanner:
-    def __init__(self, num_paths, path_offset, circle_offsets, circle_radii,
-                 path_select_weight, time_gap, a_max, slow_speed,
-                 stop_line_buffer):
+    def __init__(
+        self,
+        num_paths,
+        path_offset,
+        circle_offsets,
+        circle_radii,
+        path_select_weight,
+        time_gap,
+        a_max,
+        slow_speed,
+        stop_line_buffer,
+    ):
         self._num_paths = num_paths
         self._path_offset = path_offset
         self._path_optimizer = path_optimizer.PathOptimizer()
-        self._collision_checker = \
-            collision_checker.CollisionChecker(circle_offsets,
-                                               circle_radii,
-                                               path_select_weight)
-        self._velocity_planner = \
-            velocity_planner.VelocityPlanner(time_gap, a_max, slow_speed,
-                                             stop_line_buffer)
+        self._collision_checker = collision_checker.CollisionChecker(circle_offsets, circle_radii, path_select_weight)
+        self._velocity_planner = velocity_planner.VelocityPlanner(time_gap, a_max, slow_speed, stop_line_buffer)
 
     ######################################################
     ######################################################
@@ -98,12 +105,12 @@ class LocalPlanner:
         # consecutive waypoints, then use the np.arctan2() function.
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
-        if goal_index == len(waypoints)-1:
-            delta_x = waypoints[goal_index][0] - waypoints[goal_index-1][0]
-            delta_y = waypoints[goal_index][1] - waypoints[goal_index-1][1]
+        if goal_index == len(waypoints) - 1:
+            delta_x = waypoints[goal_index][0] - waypoints[goal_index - 1][0]
+            delta_y = waypoints[goal_index][1] - waypoints[goal_index - 1][1]
         else:
-            delta_x = waypoints[goal_index+1][0] - waypoints[goal_index][0]
-            delta_y = waypoints[goal_index+1][1] - waypoints[goal_index][1]
+            delta_x = waypoints[goal_index + 1][0] - waypoints[goal_index][0]
+            delta_y = waypoints[goal_index + 1][1] - waypoints[goal_index][1]
         heading = np.arctan2(delta_y, delta_x)
         # ------------------------------------------------------------------
 
@@ -111,7 +118,7 @@ class LocalPlanner:
         # the ego state. The following code will transform the input
         # goal state to the ego vehicle's local frame.
         # The goal state will be of the form (x, y, t, v).
-        goal_state_local = copy.copy(goal_state)   # shallow copy
+        goal_state_local = copy.copy(goal_state)  # shallow copy
 
         # Translate so the ego state is at the origin in the new frame.
         # This is done by subtracting the ego_state from the goal_state_local.
@@ -144,9 +151,9 @@ class LocalPlanner:
 
         # Keep the goal heading within [-pi, pi] so the optimizer behaves well.
         if goal_t > pi:
-            goal_t -= 2*pi
+            goal_t -= 2 * pi
         elif goal_t < -pi:
-            goal_t += 2*pi
+            goal_t += 2 * pi
 
         # Compute and apply the offset for each path such that
         # all of the paths have the same heading of the goal state,
@@ -163,14 +170,11 @@ class LocalPlanner:
             # and sin(goal_theta + pi/2), respectively.
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
-            x_offset = offset * cos(goal_t + pi/2)
-            y_offset = offset * sin(goal_t + pi/2)
+            x_offset = offset * cos(goal_t + pi / 2)
+            y_offset = offset * sin(goal_t + pi / 2)
             # ------------------------------------------------------------------
 
-            goal_state_set.append([goal_x + x_offset,
-                                   goal_y + y_offset,
-                                   goal_t,
-                                   goal_v])
+            goal_state_set.append([goal_x + x_offset, goal_y + y_offset, goal_t, goal_v])
 
         return goal_state_set
 
@@ -210,15 +214,14 @@ class LocalPlanner:
                 (true) or not (false) for the local planner to traverse. Each ith
                 path_validity corresponds to the ith path in the path list.
         """
-        paths         = []
+        paths = []
         path_validity = []
         for goal_state in goal_state_set:
-            path = self._path_optimizer.optimize_spiral(goal_state[0],
-                                                        goal_state[1],
-                                                        goal_state[2])
-            if np.linalg.norm([path[0][-1] - goal_state[0],
-                               path[1][-1] - goal_state[1],
-                               path[2][-1] - goal_state[2]]) > 0.1:
+            path = self._path_optimizer.optimize_spiral(goal_state[0], goal_state[1], goal_state[2])
+            if (
+                np.linalg.norm([path[0][-1] - goal_state[0], path[1][-1] - goal_state[1], path[2][-1] - goal_state[2]])
+                > 0.1
+            ):
                 path_validity.append(False)
             else:
                 paths.append(path)
@@ -226,8 +229,9 @@ class LocalPlanner:
 
         return paths, path_validity
 
+
 def transform_paths(paths, ego_state):
-    """ Converts the to the global coordinate frame.
+    """Converts the to the global coordinate frame.
 
     Converts the paths from the local (vehicle) coordinate frame to the
     global coordinate frame.
@@ -264,10 +268,8 @@ def transform_paths(paths, ego_state):
         t_transformed = []
 
         for i in range(len(path[0])):
-            x_transformed.append(ego_state[0] + path[0][i]*cos(ego_state[2]) - \
-                                                path[1][i]*sin(ego_state[2]))
-            y_transformed.append(ego_state[1] + path[0][i]*sin(ego_state[2]) + \
-                                                path[1][i]*cos(ego_state[2]))
+            x_transformed.append(ego_state[0] + path[0][i] * cos(ego_state[2]) - path[1][i] * sin(ego_state[2]))
+            y_transformed.append(ego_state[1] + path[0][i] * sin(ego_state[2]) + path[1][i] * cos(ego_state[2]))
             t_transformed.append(path[2][i] + ego_state[2])
 
         transformed_paths.append([x_transformed, y_transformed, t_transformed])

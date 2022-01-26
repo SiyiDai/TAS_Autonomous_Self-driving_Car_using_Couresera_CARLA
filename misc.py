@@ -12,6 +12,7 @@ import math
 import numpy as np
 import carla
 
+
 def draw_waypoints(world, waypoints, z=0.5):
     """
     Draw a list of waypoints at a certain height given in z.
@@ -37,10 +38,12 @@ def get_speed(vehicle):
 
     return 3.6 * math.sqrt(vel.x ** 2 + vel.y ** 2 + vel.z ** 2)
 
+
 def get_trafficlight_trigger_location(traffic_light):
     """
     Calculates the yaw of the waypoint that represents the trigger volume of the traffic light
     """
+
     def rotate_point(point, radians):
         """
         rotate a given point by a given angle
@@ -72,10 +75,12 @@ def is_within_distance(target_transform, reference_transform, max_distance, angl
     :param angle_interval: only locations between [min, max] angles will be considered. This isn't checked by default.
     :return: boolean
     """
-    target_vector = np.array([
-        target_transform.location.x - reference_transform.location.x,
-        target_transform.location.y - reference_transform.location.y
-    ])
+    target_vector = np.array(
+        [
+            target_transform.location.x - reference_transform.location.x,
+            target_transform.location.y - reference_transform.location.y,
+        ]
+    )
     norm_target = np.linalg.norm(target_vector)
 
     # If the vector is too short, we can simply stop here
@@ -95,7 +100,7 @@ def is_within_distance(target_transform, reference_transform, max_distance, angl
 
     fwd = reference_transform.get_forward_vector()
     forward_vector = np.array([fwd.x, fwd.y])
-    angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1., 1.)))
+    angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0)))
 
     return min_angle < angle < max_angle
 
@@ -112,7 +117,7 @@ def compute_magnitude_angle(target_location, current_location, orientation):
     norm_target = np.linalg.norm(target_vector)
 
     forward_vector = np.array([math.cos(math.radians(orientation)), math.sin(math.radians(orientation))])
-    d_angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1., 1.)))
+    d_angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0)))
 
     return (norm_target, d_angle)
 
