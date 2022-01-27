@@ -33,19 +33,22 @@ import controller.controller2d as controller2d
 import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
-from global_planner.load_waypoints import *
-from object_detection.load_stopsign import *
-from object_detection.load_parkedcar import *
-from object_detection.load_lead_car import *
-from live_plotter_helpers.control_fig_helper import *
-from live_plotter_helpers.trajectory_fig_helper import *
-from basic.argparser_helper import *
-from basic.timer import Timer
-from collision_check.get_player_collided_flag import *
-from controller.controller_utils import *
+
 from basic.get_pos import *
 from basic.config_params import *
+from basic.load_stopsign import *
+from basic.load_parkedcar import *
+from basic.load_lead_car import *
+from basic.load_waypoints import *
+from basic.argparser_helper import *
+from basic.timer import Timer
+from live_plotter_helpers.control_fig_helper import *
+from live_plotter_helpers.trajectory_fig_helper import *
+from collision_check.get_player_collided_flag import *
+from controller.controller_utils import *
 from object_detection.object_detection import *
+from local_planner.local_planner import update_local_planner
+
 
 # Script level imports
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
@@ -311,9 +314,9 @@ def exec_waypoint_nav_demo(args):
             # Local Planner Update:
             # This will use the behavioural_planner.py and local_planner.py
             lead_car_pos, lead_car_length, lead_car_speed = load_lead_car(measurement_data)
-            update_local_planner = lp.update_local_planner(frame, LP_FREQUENCY_DIVISOR)
+            _update_local_planner = update_local_planner(frame, LP_FREQUENCY_DIVISOR)
 
-            if update_local_planner:
+            if _update_local_planner:
                 # Compute open loop speed estimate.
                 open_loop_speed = lp._velocity_planner.get_open_loop_speed(current_timestamp - prev_timestamp)
 
@@ -443,7 +446,7 @@ def exec_waypoint_nav_demo(args):
                 )
 
                 # Local path plotter update
-                if update_local_planner:
+                if _update_local_planner:
                     path_counter = 0
                     for i in range(NUM_PATHS):
                         # If a path was invalid in the set, there is no path to plot.

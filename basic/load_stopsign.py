@@ -1,4 +1,5 @@
 import csv
+import os
 import numpy as np
 
 
@@ -6,7 +7,8 @@ def load_stopsign(stopsign_file):
     # Load stop sign parameters
     # Stop sign (X(m), Y(m), Z(m), Yaw(deg))
     stopsign_data = None
-    with open(stopsign_file, "r") as stopsign_file:
+    stopsign_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), stopsign_file)
+    with open(stopsign_filepath, "r") as stopsign_file:
         next(stopsign_file)  # skip header
         stopsign_reader = csv.reader(stopsign_file, delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
         stopsign_data = list(stopsign_reader)

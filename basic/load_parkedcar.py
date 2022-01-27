@@ -1,11 +1,13 @@
 import csv
+import os
 import numpy as np
 
 
 def load_parkedcar(parkedcar_file):
     # Parked car(s) (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
     parkedcar_data = None
-    with open(parkedcar_file, "r") as parkedcar_file:
+    parkedcar_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), parkedcar_file)
+    with open(parkedcar_filepath, "r") as parkedcar_file:
         next(parkedcar_file)  # skip header
         parkedcar_reader = csv.reader(parkedcar_file, delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
         parkedcar_data = list(parkedcar_reader)

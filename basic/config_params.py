@@ -40,7 +40,7 @@ PLOT_BOT = 0.1
 PLOT_WIDTH = 0.8
 PLOT_HEIGHT = 0.8
 
-WAYPOINTS_FILENAME = "course4_waypoints.txt"  # waypoint file to load
+WAYPOINTS_FILENAME = "params/course4_waypoints.txt"  # waypoint file to load
 DIST_THRESHOLD_TO_LAST_WAYPOINT = 2.0  # some distance from last position before
 # simulation ends
 
@@ -65,9 +65,9 @@ LP_FREQUENCY_DIVISOR = 2  # Frequency divisor to make the
 # number.
 
 # Course 4 specific parameters
-C4_STOP_SIGN_FILE = "stop_sign_params.txt"
+C4_STOP_SIGN_FILE = "params/stop_sign_params.txt"
 C4_STOP_SIGN_FENCELENGTH = 5  # m
-C4_PARKED_CAR_FILE = "parked_vehicle_params.txt"
+C4_PARKED_CAR_FILE = "params/parked_vehicle_params.txt"
 
 # Path interpolation parameters
 INTERP_MAX_POINTS_PLOT = 10  # number of points used for displaying
