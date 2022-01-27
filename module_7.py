@@ -32,6 +32,7 @@ import controller.controller2d as controller2d
 import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
+from load_waypoints import *
 from load_stopsign import *
 from load_parkedcar import *
 from trajectory_fig_helper import *
@@ -131,17 +132,7 @@ def exec_waypoint_nav_demo(args):
         parkedcar_data = load_parkedcar(parkedcar_file = C4_PARKED_CAR_FILE)
         parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
 
-
-        #############################################
-        # Load Waypoints
-        #############################################
-        # Opens the waypoint file and stores it to "waypoints"
-        waypoints_file = WAYPOINTS_FILENAME
-        waypoints_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), WAYPOINTS_FILENAME)
-        waypoints_np = None
-        with open(waypoints_filepath) as waypoints_file_handle:
-            waypoints = list(csv.reader(waypoints_file_handle, delimiter=",", quoting=csv.QUOTE_NONNUMERIC))
-            waypoints_np = np.array(waypoints)
+        waypoints, waypoints_np = load_waypoints(waypoints_file=WAYPOINTS_FILENAME)
 
         #############################################
         # Controller 2D Class Declaration
