@@ -49,14 +49,17 @@ class LocalPlanner:
         self._collision_checker = collision_checker.CollisionChecker(circle_offsets, circle_radii, path_select_weight)
         self._velocity_planner = velocity_planner.VelocityPlanner(time_gap, a_max, slow_speed, stop_line_buffer)
 
-    ######################################################
-    ######################################################
-    # MODULE 7: GOAL STATE COMPUTATION
-    #   Read over the function comments to familiarize yourself with the
-    #   arguments and necessary variables to return. Then follow the TODOs
-    #   (top-down) and use the surrounding comments as a guide.
-    ######################################################
-    ######################################################
+    # Execute the behaviour and local planning in the current instance
+    # Note that updating the local path during every controller update
+    # produces issues with the tracking performance (imagine everytime
+    # the controller tried to follow the path, a new path appears). For
+    # this reason, the local planner (LP) will update every X frame,
+    # stored in the variable LP_FREQUENCY_DIVISOR, as it is analogous
+    # to be operating at a frequency that is a division to the
+    # simulation frequency.
+    def update_local_planner(frame, frequency_divisor):
+        return frame % frequency_divisor == 0
+
     # Computes the goal state set from a given goal position. This is done by
     # laterally sampling offsets from the goal location along the direction
     # perpendicular to the goal yaw of the ego vehicle.

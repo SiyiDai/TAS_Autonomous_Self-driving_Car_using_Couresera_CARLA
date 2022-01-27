@@ -310,16 +310,9 @@ def exec_waypoint_nav_demo(args):
             # Local Planner Update:
             # This will use the behavioural_planner.py and local_planner.py
             lead_car_pos, lead_car_length, lead_car_speed = load_lead_car(measurement_data)
-
-            # Execute the behaviour and local planning in the current instance
-            # Note that updating the local path during every controller update
-            # produces issues with the tracking performance (imagine everytime
-            # the controller tried to follow the path, a new path appears). For
-            # this reason, the local planner (LP) will update every X frame,
-            # stored in the variable LP_FREQUENCY_DIVISOR, as it is analogous
-            # to be operating at a frequency that is a division to the
-            # simulation frequency.
-            if frame % LP_FREQUENCY_DIVISOR == 0:
+            update_local_planner = lp.update_local_planner(frame, LP_FREQUENCY_DIVISOR)
+            
+            if update_local_planner:
                 # Compute open loop speed estimate.
                 open_loop_speed = lp._velocity_planner.get_open_loop_speed(current_timestamp - prev_timestamp)
 
@@ -449,7 +442,7 @@ def exec_waypoint_nav_demo(args):
                 )
 
                 # Local path plotter update
-                if frame % LP_FREQUENCY_DIVISOR == 0:
+                if update_local_planner:
                     path_counter = 0
                     for i in range(NUM_PATHS):
                         # If a path was invalid in the set, there is no path to plot.
