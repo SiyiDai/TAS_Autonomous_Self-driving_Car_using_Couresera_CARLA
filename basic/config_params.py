@@ -2,35 +2,6 @@
 Configurable params
 """
 ITER_FOR_SIM_TIMESTEP = 10  # no. iterations to compute approx sim timestep
-WAIT_TIME_BEFORE_START = 1.00  # game seconds (time before controller start)
-TOTAL_RUN_TIME = 100.00  # game seconds (total runtime before sim end)
-TOTAL_FRAME_BUFFER = 300  # number of frames to buffer after total runtime
-NUM_PEDESTRIANS = 0  # total number of pedestrians to spawn 0
-NUM_VEHICLES = 2  # total number of vehicles to spawn 2
-SEED_PEDESTRIANS = 0  # seed for pedestrian spawn randomizer 0
-SEED_VEHICLES = 0  # seed for vehicle spawn randomizer 0
-CLIENT_WAIT_TIME = 3  # wait time for client before starting episode
-# used to make sure the server loads
-# consistently
-
-WEATHERID = {
-    "DEFAULT": 0,
-    "CLEARNOON": 1,
-    "CLOUDYNOON": 2,
-    "WETNOON": 3,
-    "WETCLOUDYNOON": 4,
-    "MIDRAINYNOON": 5,
-    "HARDRAINNOON": 6,
-    "SOFTRAINNOON": 7,
-    "CLEARSUNSET": 8,
-    "CLOUDYSUNSET": 9,
-    "WETSUNSET": 10,
-    "WETCLOUDYSUNSET": 11,
-    "MIDRAINSUNSET": 12,
-    "HARDRAINSUNSET": 13,
-    "SOFTRAINSUNSET": 14,
-}
-SIMWEATHER = WEATHERID["DEFAULT"]  # set simulation weather
 
 PLAYER_START_INDEX = 1  # spawn index for player (keep to 1)
 FIGSIZE_X_INCHES = 8  # x figure size of feedback in inches
@@ -68,6 +39,8 @@ LP_FREQUENCY_DIVISOR = 2  # Frequency divisor to make the
 C4_STOP_SIGN_FILE = "params/stop_sign_params.txt"
 C4_STOP_SIGN_FENCELENGTH = 5  # m
 C4_PARKED_CAR_FILE = "params/parked_vehicle_params.txt"
+
+CONFIG_FILE = "params/options.cfg"
 
 # Path interpolation parameters
 INTERP_MAX_POINTS_PLOT = 10  # number of points used for displaying

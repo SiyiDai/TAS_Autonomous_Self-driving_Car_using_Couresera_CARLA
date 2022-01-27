@@ -3,6 +3,8 @@ import numpy as np
 import os
 import sys
 
+from live_plotter_helpers.history_helper import history_init
+
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 from carla.client import VehicleControl
 
@@ -50,7 +52,12 @@ def store_trajectory_plot(graph, fname):
     graph.savefig(file_name)
 
 
-def write_trajectory_file(x_list, y_list, v_list, t_list, collided_list):
+def write_trajectory_file(history):
+    x_list = history[0]
+    y_list = history[1]
+    v_list = history[3]
+    t_list = history[4]
+    collided_list = history[5]
     create_controller_output_dir(CONTROLLER_OUTPUT_FOLDER)
     file_name = os.path.join(CONTROLLER_OUTPUT_FOLDER, "trajectory.txt")
 

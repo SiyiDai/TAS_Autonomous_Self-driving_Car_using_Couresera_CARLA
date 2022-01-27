@@ -3,6 +3,18 @@
 import os
 import csv
 import numpy as np
+from basic.load_stopsign import *
+from basic.load_parkedcar import *
+
+
+def load_objects(stopsign_file, stopsign_fencelength, parkedcar_file):
+    # load stopsign
+    stopsign_data = load_stopsign(stopsign_file)
+    stopsign_fences = convert_stopsign_lp(stopsign_data, stopsign_fencelength)
+    # load parked car
+    parkedcar_data = load_parkedcar(parkedcar_file)
+    parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
+    return stopsign_fences, parkedcar_box_pts
 
 
 def load_waypoints(waypoints_file):

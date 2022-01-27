@@ -1,23 +1,7 @@
 #!/usr/bin/env python3
 
-# This work is licensed under the terms of the MIT license.
-# For a copy, see <https://opensource.org/licenses/MIT>.
-
-"""
-CARLA waypoint follower assessment client script.
-
-A controller assessment to follow a given trajectory, where the trajectory
-can be defined using way-points.
-
-STARTING in a moment...
-"""
 from __future__ import print_function
 from __future__ import division
-from operator import imod
-from tracemalloc import start
-
-import pygame
-
 
 # System level imports
 import sys
@@ -25,12 +9,8 @@ import os
 import argparse
 import logging
 import time
-import math
 import numpy as np
-import csv
-import matplotlib.pyplot as plt
 import controller.controller2d as controller2d
-import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
 
@@ -42,8 +22,13 @@ from basic.load_lead_car import *
 from basic.load_waypoints import *
 from basic.argparser_helper import *
 from basic.timer import Timer
+from basic.cal_timestep import *
+from basic.make_carla_settings import *
+from basic.load_config import *
+
 from live_plotter_helpers.control_fig_helper import *
 from live_plotter_helpers.trajectory_fig_helper import *
+from live_plotter_helpers.history_helper import *
 from collision_check.get_player_collided_flag import *
 from controller.controller_utils import *
 from object_detection.object_detection import *
@@ -53,36 +38,8 @@ from local_planner.local_planner import update_local_planner
 # Script level imports
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 import live_plotter as lv  # Custom live plotting library
-from carla import sensor
 from carla.client import make_carla_client
-from carla.settings import CarlaSettings
 from carla.tcp import TCPConnectionError
-from carla.controller import utils
-from carla import image_converter
-
-
-def make_carla_settings(args):
-    """Make a CarlaSettings object with the settings we need."""
-    settings = CarlaSettings()
-
-    # There is no need for non-agent info requests if there are no pedestrians
-    # or vehicles.
-    get_non_player_agents_info = False
-    if NUM_PEDESTRIANS > 0 or NUM_VEHICLES > 0:
-        get_non_player_agents_info = True
-
-    # Base level settings
-    settings.set(
-        SynchronousMode=True,
-        SendNonPlayerAgentsInfo=get_non_player_agents_info,
-        NumberOfVehicles=NUM_VEHICLES,
-        NumberOfPedestrians=NUM_PEDESTRIANS,
-        SeedVehicles=SEED_VEHICLES,
-        SeedPedestrians=SEED_PEDESTRIANS,
-        WeatherId=SIMWEATHER,
-        QualityLevel=args.quality_level,
-    )
-    return settings
 
 
 def exec_waypoint_nav_demo(args):
@@ -92,19 +49,12 @@ def exec_waypoint_nav_demo(args):
         print("Carla client connected.")
 
         settings = make_carla_settings(args)
-
-        # Now we load these settings into the server. The server replies
-        # with a scene description containing the available start spots for
-        # the player. Here we can provide a CarlaSettings object or a
-        # CarlaSettings.ini file as string.
         scene = client.load_settings(settings)
 
         # Refer to the player start folder in the WorldOutliner to see the
         # player start information
         player_start = PLAYER_START_INDEX
-
         client.start_episode(player_start)
-
         time.sleep(CLIENT_WAIT_TIME)
 
         # Notify the server that we want to start the episode at the
@@ -113,48 +63,27 @@ def exec_waypoint_nav_demo(args):
         print("Starting new episode at %r..." % scene.map_name)
         client.start_episode(player_start)
 
-        #############################################
         # Load Configurations
-        #############################################
-
-        # Load configuration file (options.cfg) and then parses for the various
-        # options. Here we have two main options:
-        # live_plotting and live_plotting_period, which controls whether
-        # live plotting is enabled or how often the live plotter updates
-        # during the simulation run.
-        config = configparser.ConfigParser()
-        config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "options.cfg"))
-        demo_opt = config["Demo Parameters"]
-
-        # Get options
-        enable_live_plot = demo_opt.get("live_plotting", "true").capitalize()
-        enable_live_plot = enable_live_plot == "True"
-        live_plot_period = float(demo_opt.get("live_plotting_period", 0))
+        demo_opt = load_config(CONFIG_FILE)
+        enable_live_plot, live_plot_period = get_options(demo_opt)
 
         # Set options
         live_plot_timer = Timer(live_plot_period)
-        stopsign_data = load_stopsign(stopsign_file=C4_STOP_SIGN_FILE)
-        stopsign_fences = convert_stopsign_lp(stopsign_data, stopsign_fencelength=C4_STOP_SIGN_FENCELENGTH)
 
-        parkedcar_data = load_parkedcar(parkedcar_file=C4_PARKED_CAR_FILE)
-        parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
+        # load objects
+        stopsign_fences, parkedcar_box_pts = load_objects(
+            stopsign_file=C4_STOP_SIGN_FILE,
+            stopsign_fencelength=C4_STOP_SIGN_FENCELENGTH,
+            parkedcar_file=C4_PARKED_CAR_FILE,
+        )
 
+        # load global planner waypoints
         waypoints, waypoints_np = load_waypoints(waypoints_file=WAYPOINTS_FILENAME)
 
-        #############################################
         # Controller 2D Class Declaration
-        #############################################
-        # This is where we take the controller2d.py class
-        # and apply it to the simulator
         controller = controller2d.Controller2D(waypoints)
 
-        #############################################
-        # Determine simulation average timestep (and total frames)
-        #############################################
-        # Ensure at least one frame is used to compute average timestep
-        num_iterations = ITER_FOR_SIM_TIMESTEP
-        if ITER_FOR_SIM_TIMESTEP < 1:
-            num_iterations = 1
+        num_iterations = regulate_num_iteration(ITER_FOR_SIM_TIMESTEP)
 
         # Gather current data from the CARLA server. This is used to get the
         # simulator starting game time. Note that we also need to
@@ -176,42 +105,23 @@ def exec_waypoint_nav_demo(args):
             if i == num_iterations - 1:
                 sim_duration = measurement_data.game_timestamp / 1000.0 - sim_start_stamp
 
-        # Outputs average simulation timestep and computes how many frames
-        # will elapse before the simulation should end based on various
-        # parameters that we set in the beginning.
-        SIMULATION_TIME_STEP = sim_duration / float(num_iterations)
-        print("SERVER SIMULATION STEP APPROXIMATION: " + str(SIMULATION_TIME_STEP))
-        TOTAL_EPISODE_FRAMES = (
-            int((TOTAL_RUN_TIME + WAIT_TIME_BEFORE_START) / SIMULATION_TIME_STEP) + TOTAL_FRAME_BUFFER
-        )
+        TOTAL_EPISODE_FRAMES = cal_total_episode(sim_duration, num_iterations)
 
-        #############################################
         # Frame-by-Frame Iteration and Initialization
-        #############################################
         # Store pose history starting from the start position
         measurement_data, sensor_data = client.read_data()
         start_timestamp = measurement_data.game_timestamp / 1000.0
         start_x, start_y, start_yaw = get_current_pose(measurement_data)
         send_control_command(client, throttle=0.0, steer=0, brake=1.0)
-        x_history = [start_x]
-        y_history = [start_y]
-        yaw_history = [start_yaw]
-        time_history = [0]
-        speed_history = [0]
-        collided_flag_history = [False]  # assume player starts off non-collided
 
-        #############################################
+        # history = [x_history, y_history, yaw_history, time_history, speed_history, collided_flag_history]
+        history = history_init(start_x, start_y, start_yaw)
+
         # Vehicle Trajectory Live Plotting Setup
-        #############################################
-        # Uses the live plotter to generate live feedback during the simulation
-        # The two feedback includes the trajectory feedback and
-        # the controller feedback (which includes the speed tracking).
         lp_traj = lv.LivePlotter(tk_title="Trajectory Trace")
         lp_1d = lv.LivePlotter(tk_title="Controls Feedback")
 
-        ###
         # Add 2D position / trajectory plot
-        ###
         fig_size = (FIGSIZE_X_INCHES, FIGSIZE_Y_INCHES)
         plot_rect = [PLOT_LEFT, PLOT_BOT, PLOT_WIDTH, PLOT_HEIGHT]
 
@@ -239,9 +149,7 @@ def exec_waypoint_nav_demo(args):
             lp_traj._root.withdraw()
             lp_1d._root.withdraw()
 
-        #############################################
         # Local Planner Variables
-        #############################################
         wp_goal_index = 0
         local_waypoints = None
         path_validity = np.zeros((NUM_PATHS, 1), dtype=bool)
@@ -293,13 +201,6 @@ def exec_waypoint_nav_demo(args):
             else:
                 current_timestamp = current_timestamp - WAIT_TIME_BEFORE_START
 
-            # Store history
-            x_history.append(current_x)
-            y_history.append(current_y)
-            yaw_history.append(current_yaw)
-            speed_history.append(current_speed)
-            time_history.append(current_timestamp)
-
             # Store collision history
             (
                 collided_flag,
@@ -309,7 +210,8 @@ def exec_waypoint_nav_demo(args):
             ) = get_player_collided_flag(
                 measurement_data, prev_collision_vehicles, prev_collision_pedestrians, prev_collision_other
             )
-            collided_flag_history.append(collided_flag)
+            current_state = [current_x, current_y, current_yaw, current_speed, current_timestamp, collided_flag]
+            history_update(history, current_state)
 
             # Local Planner Update:
             # This will use the behavioural_planner.py and local_planner.py
@@ -511,8 +413,8 @@ def exec_waypoint_nav_demo(args):
         store_trajectory_plot(throttle_fig.fig, "throttle_output.png")
         store_trajectory_plot(brake_fig.fig, "brake_output.png")
         store_trajectory_plot(steer_fig.fig, "steer_output.png")
-        write_trajectory_file(x_history, y_history, speed_history, time_history, collided_flag_history)
-        write_collisioncount_file(collided_flag_history)
+        write_trajectory_file(history)
+        write_collisioncount_file(collided_list=history[-1])
 
 
 def main():

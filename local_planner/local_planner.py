@@ -28,6 +28,7 @@ from math import sin, cos, pi, sqrt
 def update_local_planner(frame, frequency_divisor):
     return frame % frequency_divisor == 0
 
+
 class RoadOption(Enum):
     """
     RoadOption represents the possible topological configurations when moving from a segment of lane to other.
