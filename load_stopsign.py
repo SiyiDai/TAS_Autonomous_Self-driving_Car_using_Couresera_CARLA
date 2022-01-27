@@ -15,7 +15,7 @@ def load_stopsign(stopsign_file):
     return stopsign_data
 
 def convert_stopsign_lp(stopsign_data, stopsign_fencelength):
-    # Convert to input params for LP
+    # Convert to input params for local planner
     stopsign_fences = []  # [x0, y0, x1, y1]
     # obtain stop sign fence points for LP
     for i in range(len(stopsign_data)):

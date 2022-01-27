@@ -14,7 +14,7 @@ def load_parkedcar(parkedcar_file):
     return parkedcar_data
 
 def obtain_parkedcar_lp(parkedcar_data):
-    # obtain parked car(s) box points for LP
+    # obtain parked car(s) box points for local planner
     parkedcar_box_pts = []  # [x,y]
     for i in range(len(parkedcar_data)):
         x = parkedcar_data[i][0]

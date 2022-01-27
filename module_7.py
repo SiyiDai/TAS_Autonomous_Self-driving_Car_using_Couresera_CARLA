@@ -13,6 +13,7 @@ STARTING in a moment...
 """
 from __future__ import print_function
 from __future__ import division
+from operator import imod
 from tracemalloc import start
 
 import pygame
@@ -35,6 +36,8 @@ import local_planner.behavioural_planner as behavioural_planner
 from load_waypoints import *
 from load_stopsign import *
 from load_parkedcar import *
+from load_lead_car import *
+from control_fig_helper import *
 from trajectory_fig_helper import *
 from basic.timer import Timer
 from collision_check.get_player_collided_flag import *
@@ -222,22 +225,10 @@ def exec_waypoint_nav_demo(args):
             window_size_lookahead=INTERP_MAX_POINTS_PLOT,
         )
 
-        ###
-        # Add 1D speed profile updater
-        ###
-        forward_speed_fig = lp_1d.plot_new_dynamic_figure(title="Forward Speed (m/s)")
-        forward_speed_fig.add_graph("forward_speed", label="forward_speed", window_size=TOTAL_EPISODE_FRAMES)
-        forward_speed_fig.add_graph("reference_signal", label="reference_Signal", window_size=TOTAL_EPISODE_FRAMES)
-
-        # Add throttle signals graph
-        throttle_fig = lp_1d.plot_new_dynamic_figure(title="Throttle")
-        throttle_fig.add_graph("throttle", label="throttle", window_size=TOTAL_EPISODE_FRAMES)
-        # Add brake signals graph
-        brake_fig = lp_1d.plot_new_dynamic_figure(title="Brake")
-        brake_fig.add_graph("brake", label="brake", window_size=TOTAL_EPISODE_FRAMES)
-        # Add steering signals graph
-        steer_fig = lp_1d.plot_new_dynamic_figure(title="Steer")
-        steer_fig.add_graph("steer", label="steer", window_size=TOTAL_EPISODE_FRAMES)
+        forward_speed_fig = add_forward_speed_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
+        throttle_fig = add_throttle_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
+        brake_fig = add_brake_fig(lp_1d, window_size = TOTAL_EPISODE_FRAMES)
+        steer_fig = add_steer_fig(lp_1d, window_size = TOTAL_EPISODE_FRAMES)
 
         # live plotter is disabled, hide windows
         if not enable_live_plot:
@@ -316,23 +307,9 @@ def exec_waypoint_nav_demo(args):
             )
             collided_flag_history.append(collided_flag)
 
-            ###
             # Local Planner Update:
-            #   This will use the behavioural_planner.py and local_planner.py
-            #   implementations that the learner will be tasked with in
-            #   the Course 4 final project
-            ###
-
-            # Obtain Lead Vehicle information.
-            lead_car_pos = []
-            lead_car_length = []
-            lead_car_speed = []
-            for agent in measurement_data.non_player_agents:
-                agent_id = agent.id
-                if agent.HasField("vehicle"):
-                    lead_car_pos.append([agent.vehicle.transform.location.x, agent.vehicle.transform.location.y])
-                    lead_car_length.append(agent.vehicle.bounding_box.extent.x)
-                    lead_car_speed.append(agent.vehicle.forward_speed)
+            # This will use the behavioural_planner.py and local_planner.py
+            lead_car_pos, lead_car_length, lead_car_speed= load_lead_car(measurement_data)
 
             # Execute the behaviour and local planning in the current instance
             # Note that updating the local path during every controller update
@@ -343,20 +320,6 @@ def exec_waypoint_nav_demo(args):
             # to be operating at a frequency that is a division to the
             # simulation frequency.
             if frame % LP_FREQUENCY_DIVISOR == 0:
-                # TODO Once you have completed the prerequisite functions of each of these
-                # lines, you can uncomment the code below the dashed line to run the planner.
-                # Note that functions lower in this block often require outputs from the functions
-                # earlier in this block, so it may be easier to implement those first to
-                # get a more intuitive flow of the planner.
-                # In addition, some of these functions have already been implemented for you,
-                # but it is useful for you to understand what each function is doing.
-                # Before you uncomment a function, please take the time to take a look at
-                # it and understand what is going on. It will also help inform you on the
-                # flow of the planner, which in turn will help you implement the functions
-                # flagged for you in the TODO's.
-
-                # TODO: Uncomment each code block between the dashed lines to run the planner.
-                # --------------------------------------------------------------
                 # Compute open loop speed estimate.
                 open_loop_speed = lp._velocity_planner.get_open_loop_speed(current_timestamp - prev_timestamp)
 
