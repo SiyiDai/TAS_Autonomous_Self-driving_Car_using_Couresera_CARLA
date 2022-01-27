@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 
+
 def load_stopsign(stopsign_file):
     # Load stop sign parameters
     # Stop sign (X(m), Y(m), Z(m), Yaw(deg))
@@ -13,6 +14,7 @@ def load_stopsign(stopsign_file):
         for i in range(len(stopsign_data)):
             stopsign_data[i][3] = stopsign_data[i][3] * np.pi / 180.0
     return stopsign_data
+
 
 def convert_stopsign_lp(stopsign_data, stopsign_fencelength):
     # Convert to input params for local planner

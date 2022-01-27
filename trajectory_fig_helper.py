@@ -1,6 +1,14 @@
 import numpy as np
 
 
+def trajectory_fig_upadte(trajectory_fig, current_x, current_y, lead_car_pos):
+    # Update live plotter with new feedback
+    trajectory_fig.roll("trajectory", current_x, current_y)
+    trajectory_fig.roll("car", current_x, current_y)
+    if lead_car_pos:  # If there exists a lead car, plot it
+        trajectory_fig.roll("leadcar", lead_car_pos[1][0], lead_car_pos[1][1])
+
+
 def trajectory_fig_set_all(
     trajectory_fig,
     waypoints_np,

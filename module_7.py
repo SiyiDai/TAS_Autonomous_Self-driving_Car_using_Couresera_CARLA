@@ -129,10 +129,10 @@ def exec_waypoint_nav_demo(args):
 
         # Set options
         live_plot_timer = Timer(live_plot_period)
-        stopsign_data = load_stopsign(stopsign_file = C4_STOP_SIGN_FILE)
-        stopsign_fences= convert_stopsign_lp(stopsign_data, stopsign_fencelength =C4_STOP_SIGN_FENCELENGTH)
+        stopsign_data = load_stopsign(stopsign_file=C4_STOP_SIGN_FILE)
+        stopsign_fences = convert_stopsign_lp(stopsign_data, stopsign_fencelength=C4_STOP_SIGN_FENCELENGTH)
 
-        parkedcar_data = load_parkedcar(parkedcar_file = C4_PARKED_CAR_FILE)
+        parkedcar_data = load_parkedcar(parkedcar_file=C4_PARKED_CAR_FILE)
         parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
 
         waypoints, waypoints_np = load_waypoints(waypoints_file=WAYPOINTS_FILENAME)
@@ -227,8 +227,8 @@ def exec_waypoint_nav_demo(args):
 
         forward_speed_fig = add_forward_speed_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
         throttle_fig = add_throttle_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
-        brake_fig = add_brake_fig(lp_1d, window_size = TOTAL_EPISODE_FRAMES)
-        steer_fig = add_steer_fig(lp_1d, window_size = TOTAL_EPISODE_FRAMES)
+        brake_fig = add_brake_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
+        steer_fig = add_steer_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
 
         # live plotter is disabled, hide windows
         if not enable_live_plot:
@@ -309,7 +309,7 @@ def exec_waypoint_nav_demo(args):
 
             # Local Planner Update:
             # This will use the behavioural_planner.py and local_planner.py
-            lead_car_pos, lead_car_length, lead_car_speed= load_lead_car(measurement_data)
+            lead_car_pos, lead_car_length, lead_car_speed = load_lead_car(measurement_data)
 
             # Execute the behaviour and local planning in the current instance
             # Note that updating the local path during every controller update
@@ -376,8 +376,7 @@ def exec_waypoint_nav_demo(args):
 
                 if local_waypoints != None:
                     # Update the controller waypoint path with the best local path.
-                    # This controller is similar to that developed in Course 1 of this
-                    # specialization.  Linear interpolation computation on the waypoints
+                    # Linear interpolation computation on the waypoints
                     # is also used to ensure a fine resolution between points.
                     wp_distance = []  # distance array
                     local_waypoints_np = np.array(local_waypoints)
@@ -435,16 +434,19 @@ def exec_waypoint_nav_demo(args):
             elif local_waypoints == None:
                 pass
             else:
-                # Update live plotter with new feedback
-                trajectory_fig.roll("trajectory", current_x, current_y)
-                trajectory_fig.roll("car", current_x, current_y)
-                if lead_car_pos:  # If there exists a lead car, plot it
-                    trajectory_fig.roll("leadcar", lead_car_pos[1][0], lead_car_pos[1][1])
-                forward_speed_fig.roll("forward_speed", current_timestamp, current_speed)
-                forward_speed_fig.roll("reference_signal", current_timestamp, controller._desired_speed)
-                throttle_fig.roll("throttle", current_timestamp, cmd_throttle)
-                brake_fig.roll("brake", current_timestamp, cmd_brake)
-                steer_fig.roll("steer", current_timestamp, cmd_steer)
+                trajectory_fig_upadte(trajectory_fig, current_x, current_y, lead_car_pos)
+                control_fig_update(
+                    forward_speed_fig,
+                    throttle_fig,
+                    brake_fig,
+                    steer_fig,
+                    current_timestamp,
+                    current_speed,
+                    controller,
+                    cmd_throttle,
+                    cmd_brake,
+                    cmd_steer,
+                )
 
                 # Local path plotter update
                 if frame % LP_FREQUENCY_DIVISOR == 0:

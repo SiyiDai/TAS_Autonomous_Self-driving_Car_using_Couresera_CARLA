@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 
+
 def load_parkedcar(parkedcar_file):
     # Parked car(s) (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
     parkedcar_data = None
@@ -13,6 +14,7 @@ def load_parkedcar(parkedcar_file):
             parkedcar_data[i][3] = parkedcar_data[i][3] * np.pi / 180.0
     return parkedcar_data
 
+
 def obtain_parkedcar_lp(parkedcar_data):
     # obtain parked car(s) box points for local planner
     parkedcar_box_pts = []  # [x,y]
@@ -24,9 +26,7 @@ def obtain_parkedcar_lp(parkedcar_data):
         xrad = parkedcar_data[i][4]
         yrad = parkedcar_data[i][5]
         zrad = parkedcar_data[i][6]
-        cpos = np.array(
-            [[-xrad, -xrad, -xrad, 0, xrad, xrad, xrad, 0], [-yrad, 0, yrad, yrad, yrad, 0, -yrad, -yrad]]
-        )
+        cpos = np.array([[-xrad, -xrad, -xrad, 0, xrad, xrad, xrad, 0], [-yrad, 0, yrad, yrad, yrad, 0, -yrad, -yrad]])
         rotyaw = np.array([[np.cos(yaw), np.sin(yaw)], [-np.sin(yaw), np.cos(yaw)]])
         cpos_shift = np.array([[x, x, x, x, x, x, x, x], [y, y, y, y, y, y, y, y]])
         cpos = np.add(np.matmul(rotyaw, cpos), cpos_shift)

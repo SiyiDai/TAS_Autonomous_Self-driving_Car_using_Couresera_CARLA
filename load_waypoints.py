@@ -2,6 +2,7 @@ import os
 import csv
 import numpy as np
 
+
 def load_waypoints(waypoints_file):
     # Load Waypoints
     # Opens the waypoint file and stores it to "waypoints"
