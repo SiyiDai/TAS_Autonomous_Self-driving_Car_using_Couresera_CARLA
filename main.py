@@ -167,9 +167,7 @@ def exec_waypoint_nav_demo(args):
         )
         bp = behavioural_planner.BehaviouralPlanner(BP_LOOKAHEAD_BASE, stopsign_fences, LEAD_VEHICLE_LOOKAHEAD)
 
-        #############################################
         # Scenario Execution Loop
-        #############################################
 
         # Iterate the frames until the end of the waypoints is reached or
         # the TOTAL_EPISODE_FRAMES is reached. The controller simulation then
@@ -198,14 +196,7 @@ def exec_waypoint_nav_demo(args):
                 current_timestamp = current_timestamp - WAIT_TIME_BEFORE_START
 
             # Store collision history
-            (
-                collided_flag,
-                prev_collision_vehicles,
-                prev_collision_pedestrians,
-                prev_collision_other,
-            ) = get_player_collided_flag(
-                measurement_data, prev_collision_vehicles, prev_collision_pedestrians, prev_collision_other
-            )
+            collided_flag = get_player_collided_flag(measurement_data)
             current_state = [current_x, current_y, current_yaw, current_speed, current_timestamp, collided_flag]
             history_update(history, current_state)
 
@@ -280,9 +271,7 @@ def exec_waypoint_nav_demo(args):
                     controller.update_waypoints(wp_interp)
                     pass
 
-            ###
             # Controller Update
-            ###
             if local_waypoints != None and local_waypoints != []:
                 controller.update_values(current_x, current_y, current_yaw, current_speed, current_timestamp, frame)
                 controller.update_controls()
@@ -350,11 +339,7 @@ def exec_waypoint_nav_demo(args):
         # Stop the car
         send_control_command(client, throttle=0.0, steer=0.0, brake=1.0)
         # Store the various outputs
-        store_trajectory_plot(trajectory_fig.fig, "trajectory.png")
-        store_trajectory_plot(forward_speed_fig.fig, "forward_speed.png")
-        store_trajectory_plot(throttle_fig.fig, "throttle_output.png")
-        store_trajectory_plot(brake_fig.fig, "brake_output.png")
-        store_trajectory_plot(steer_fig.fig, "steer_output.png")
+        store_trajectory_plot_all(trajectory_fig, forward_speed_fig, throttle_fig, brake_fig, steer_fig)
         write_trajectory_file(history)
         write_collisioncount_file(collided_list=history[-1])
 

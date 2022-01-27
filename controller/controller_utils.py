@@ -44,6 +44,14 @@ def create_controller_output_dir(output_folder):
         os.makedirs(output_folder)
 
 
+def store_trajectory_plot_all(trajectory_fig, forward_speed_fig, throttle_fig, brake_fig, steer_fig):
+    store_trajectory_plot(trajectory_fig.fig, "trajectory.png")
+    store_trajectory_plot(forward_speed_fig.fig, "forward_speed.png")
+    store_trajectory_plot(throttle_fig.fig, "throttle_output.png")
+    store_trajectory_plot(brake_fig.fig, "brake_output.png")
+    store_trajectory_plot(steer_fig.fig, "steer_output.png")
+
+
 def store_trajectory_plot(graph, fname):
     """Store the resulting plot."""
     create_controller_output_dir(CONTROLLER_OUTPUT_FOLDER)
