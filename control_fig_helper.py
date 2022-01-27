@@ -20,5 +20,5 @@ def add_brake_fig(lp_1d, window_size):
 def add_steer_fig(lp_1d, window_size):
     # Add steering signals graph
     steer_fig = lp_1d.plot_new_dynamic_figure(title="Steer")
-    steer_fig.add_grph("steer", label="steer", window_size=window_size)
+    steer_fig.add_graph("steer", label="steer", window_size=window_size)
     return steer_fig
