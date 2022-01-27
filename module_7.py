@@ -33,6 +33,7 @@ import configparser
 import local_planner.local_planner as local_planner
 import local_planner.behavioural_planner as behavioural_planner
 from load_stopsign import *
+from load_parkedcar import *
 from trajectory_fig_helper import *
 from basic.timer import Timer
 from collision_check.get_player_collided_flag import *
@@ -127,34 +128,9 @@ def exec_waypoint_nav_demo(args):
         stopsign_data = load_stopsign(stopsign_file = C4_STOP_SIGN_FILE)
         stopsign_fences= convert_stopsign_lp(stopsign_data, stopsign_fencelength =C4_STOP_SIGN_FENCELENGTH)
 
-        # Parked car(s) (X(m), Y(m), Z(m), Yaw(deg), RADX(m), RADY(m), RADZ(m))
-        parkedcar_data = None
-        parkedcar_box_pts = []  # [x,y]
-        with open(C4_PARKED_CAR_FILE, "r") as parkedcar_file:
-            next(parkedcar_file)  # skip header
-            parkedcar_reader = csv.reader(parkedcar_file, delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
-            parkedcar_data = list(parkedcar_reader)
-            # convert to rad
-            for i in range(len(parkedcar_data)):
-                parkedcar_data[i][3] = parkedcar_data[i][3] * np.pi / 180.0
+        parkedcar_data = load_parkedcar(parkedcar_file = C4_PARKED_CAR_FILE)
+        parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
 
-        # obtain parked car(s) box points for LP
-        for i in range(len(parkedcar_data)):
-            x = parkedcar_data[i][0]
-            y = parkedcar_data[i][1]
-            z = parkedcar_data[i][2]
-            yaw = parkedcar_data[i][3]
-            xrad = parkedcar_data[i][4]
-            yrad = parkedcar_data[i][5]
-            zrad = parkedcar_data[i][6]
-            cpos = np.array(
-                [[-xrad, -xrad, -xrad, 0, xrad, xrad, xrad, 0], [-yrad, 0, yrad, yrad, yrad, 0, -yrad, -yrad]]
-            )
-            rotyaw = np.array([[np.cos(yaw), np.sin(yaw)], [-np.sin(yaw), np.cos(yaw)]])
-            cpos_shift = np.array([[x, x, x, x, x, x, x, x], [y, y, y, y, y, y, y, y]])
-            cpos = np.add(np.matmul(rotyaw, cpos), cpos_shift)
-            for j in range(cpos.shape[1]):
-                parkedcar_box_pts.append([cpos[0, j], cpos[1, j]])
 
         #############################################
         # Load Waypoints
