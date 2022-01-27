@@ -9,6 +9,39 @@ def trajectory_fig_upadte(trajectory_fig, current_x, current_y, lead_car_pos):
         trajectory_fig.roll("leadcar", lead_car_pos[1][0], lead_car_pos[1][1])
 
 
+def trajectory_fig_lookahead_path_update(trajectory_fig, wp_interp, interp_max):
+    # When plotting lookahead path, only plot a number of points. This is meant
+    # to decrease load when live plotting
+    wp_interp_np = np.array(wp_interp)
+    path_indices = np.floor(np.linspace(0, wp_interp_np.shape[0] - 1, interp_max))
+    trajectory_fig.update(
+        "selected_path",
+        wp_interp_np[path_indices.astype(int), 0],
+        wp_interp_np[path_indices.astype(int), 1],
+        new_colour=[1, 0.5, 0.0],
+    )
+
+
+def trajectory_fig_local_path_update(
+    trajectory_fig, num_paths, path_validity, collision_check_array, best_index, paths, ego_state
+):
+    path_counter = 0
+    for i in range(num_paths):
+        # If a path was invalid in the set, there is no path to plot.
+        if path_validity[i]:
+            # Colour paths according to collision checking.
+            if not collision_check_array[path_counter]:
+                colour = "r"
+            elif i == best_index:
+                colour = "k"
+            else:
+                colour = "b"
+            trajectory_fig.update("local_path " + str(i), paths[path_counter][0], paths[path_counter][1], colour)
+            path_counter += 1
+        else:
+            trajectory_fig.update("local_path " + str(i), [ego_state[0]], [ego_state[1]], "r")
+
+
 def trajectory_fig_set_all(
     trajectory_fig,
     waypoints_np,

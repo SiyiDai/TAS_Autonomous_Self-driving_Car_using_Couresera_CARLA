@@ -31,6 +31,7 @@ from live_plotter_helpers.trajectory_fig_helper import *
 from live_plotter_helpers.history_helper import *
 from collision_check.get_player_collided_flag import *
 from controller.controller_utils import *
+from controller.cal_waypoint_helper import *
 from object_detection.object_detection import *
 from local_planner.local_planner import update_local_planner
 
@@ -179,11 +180,6 @@ def exec_waypoint_nav_demo(args):
         # Initialize the current timestamp.
         current_timestamp = start_timestamp
 
-        # Initialize collision history
-        prev_collision_vehicles = 0
-        prev_collision_pedestrians = 0
-        prev_collision_other = 0
-
         for frame in range(TOTAL_EPISODE_FRAMES):
             # Gather current data from the CARLA server
             measurement_data, sensor_data = client.read_data()
@@ -274,42 +270,11 @@ def exec_waypoint_nav_demo(args):
                 # --------------------------------------------------------------
 
                 if local_waypoints != None:
-                    # Update the controller waypoint path with the best local path.
-                    # Linear interpolation computation on the waypoints
-                    # is also used to ensure a fine resolution between points.
-                    wp_distance = []  # distance array
                     local_waypoints_np = np.array(local_waypoints)
-                    for i in range(1, local_waypoints_np.shape[0]):
-                        wp_distance.append(
-                            np.sqrt(
-                                (local_waypoints_np[i, 0] - local_waypoints_np[i - 1, 0]) ** 2
-                                + (local_waypoints_np[i, 1] - local_waypoints_np[i - 1, 1]) ** 2
-                            )
-                        )
-                    wp_distance.append(0)  # last distance is 0 because it is the distance
-                    # from the last waypoint to the last waypoint
-
-                    # Linearly interpolate between waypoints and store in a list
-                    wp_interp = []  # interpolated values
-                    # (rows = waypoints, columns = [x, y, v])
-                    for i in range(local_waypoints_np.shape[0] - 1):
-                        # Add original waypoint to interpolated waypoints list (and append
-                        # it to the hash table)
-                        wp_interp.append(list(local_waypoints_np[i]))
-
-                        # Interpolate to the next waypoint. First compute the number of
-                        # points to interpolate based on the desired resolution and
-                        # incrementally add interpolated points until the next waypoint
-                        # is about to be reached.
-                        num_pts_to_interp = int(np.floor(wp_distance[i] / float(INTERP_DISTANCE_RES)) - 1)
-                        wp_vector = local_waypoints_np[i + 1] - local_waypoints_np[i]
-                        wp_uvector = wp_vector / np.linalg.norm(wp_vector[0:2])
-
-                        for j in range(num_pts_to_interp):
-                            next_wp_vector = INTERP_DISTANCE_RES * float(j + 1) * wp_uvector
-                            wp_interp.append(list(local_waypoints_np[i] + next_wp_vector))
-                    # add last waypoint at the end
-                    wp_interp.append(list(local_waypoints_np[-1]))
+                    wp_distance = cal_waypoint_distance(local_waypoints_np)
+                    wp_interp = cal_waypoint_interpolate(
+                        wp_distance, local_waypoints_np, interp_distance_res=INTERP_DISTANCE_RES
+                    )
 
                     # Update the other controller values and controls
                     controller.update_waypoints(wp_interp)
@@ -349,34 +314,11 @@ def exec_waypoint_nav_demo(args):
 
                 # Local path plotter update
                 if _update_local_planner:
-                    path_counter = 0
-                    for i in range(NUM_PATHS):
-                        # If a path was invalid in the set, there is no path to plot.
-                        if path_validity[i]:
-                            # Colour paths according to collision checking.
-                            if not collision_check_array[path_counter]:
-                                colour = "r"
-                            elif i == best_index:
-                                colour = "k"
-                            else:
-                                colour = "b"
-                            trajectory_fig.update(
-                                "local_path " + str(i), paths[path_counter][0], paths[path_counter][1], colour
-                            )
-                            path_counter += 1
-                        else:
-                            trajectory_fig.update("local_path " + str(i), [ego_state[0]], [ego_state[1]], "r")
-                # When plotting lookahead path, only plot a number of points
-                # (INTERP_MAX_POINTS_PLOT amount of points). This is meant
-                # to decrease load when live plotting
-                wp_interp_np = np.array(wp_interp)
-                path_indices = np.floor(np.linspace(0, wp_interp_np.shape[0] - 1, INTERP_MAX_POINTS_PLOT))
-                trajectory_fig.update(
-                    "selected_path",
-                    wp_interp_np[path_indices.astype(int), 0],
-                    wp_interp_np[path_indices.astype(int), 1],
-                    new_colour=[1, 0.5, 0.0],
-                )
+                    trajectory_fig_local_path_update(
+                        trajectory_fig, NUM_PATHS, path_validity, collision_check_array, best_index, paths, ego_state
+                    )
+                # lookahead path plotter update
+                trajectory_fig_lookahead_path_update(trajectory_fig, wp_interp, INTERP_MAX_POINTS_PLOT)
 
                 # Refresh the live plot based on the refresh rate
                 # set by the options

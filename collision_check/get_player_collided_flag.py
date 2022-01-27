@@ -1,3 +1,9 @@
+# Initialize collision history
+prev_collision_vehicles = 0
+prev_collision_pedestrians = 0
+prev_collision_other = 0
+
+
 def get_player_collided_flag(measurement, prev_collision_vehicles, prev_collision_pedestrians, prev_collision_other):
     """Obtains collision flag from player. Check if any of the three collision
     metrics (vehicles, pedestrians, others) from the player are true, if so the
