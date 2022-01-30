@@ -11,7 +11,9 @@ def control_fig_update(
     cmd_steer,
 ):
     forward_speed_fig.roll("forward_speed", current_timestamp, current_speed)
-    forward_speed_fig.roll("reference_signal", current_timestamp, controller._desired_speed)
+    forward_speed_fig.roll(
+        "reference_signal", current_timestamp, controller._desired_speed
+    )
     throttle_fig.roll("throttle", current_timestamp, cmd_throttle)
     brake_fig.roll("brake", current_timestamp, cmd_brake)
     steer_fig.roll("steer", current_timestamp, cmd_steer)
@@ -19,16 +21,24 @@ def control_fig_update(
 
 def add_forward_speed_fig(lp_1d, window_size):
     # Add 1D speed profile updater
-    forward_speed_fig = lp_1d.plot_new_dynamic_figure(title="Forward Speed (m/s)")
-    forward_speed_fig.add_graph("forward_speed", label="forward_speed", window_size=window_size)
-    forward_speed_fig.add_graph("reference_signal", label="reference_Signal", window_size=window_size)
+    forward_speed_fig = lp_1d.plot_new_dynamic_figure(
+        title="Forward Speed (m/s)"
+    )
+    forward_speed_fig.add_graph(
+        "forward_speed", label="forward_speed", window_size=window_size
+    )
+    forward_speed_fig.add_graph(
+        "reference_signal", label="reference_Signal", window_size=window_size
+    )
     return forward_speed_fig
 
 
 def add_throttle_fig(lp_1d, window_size):
     # Add throttle signals graph
     throttle_fig = lp_1d.plot_new_dynamic_figure(title="Throttle")
-    throttle_fig.add_graph("throttle", label="throttle", window_size=window_size)
+    throttle_fig.add_graph(
+        "throttle", label="throttle", window_size=window_size
+    )
     return throttle_fig
 
 

@@ -23,7 +23,9 @@ class BehaviouralPlanner:
         self._goal_state = [0.0, 0.0, 0.0]
         self._goal_index = 0
         self._stop_count = 0
-        self._stopsign_idx = 0  # Avoid stop for the same stopsign more than once
+        self._stopsign_idx = (
+            0  # Avoid stop for the same stopsign more than once
+        )
 
     def set_lookahead(self, lookahead):
         self._lookahead = lookahead
@@ -99,14 +101,18 @@ class BehaviouralPlanner:
             # along the waypoints.
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
-            goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
+            goal_index = self.get_goal_index(
+                waypoints, ego_state, closest_len, closest_index
+            )
             # ------------------------------------------------------------------
 
             # Finally, check the index set between closest_index and goal_index
             # for stop signs, and compute the goal state accordingly.
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINESs
             # ------------------------------------------------------------------
-            goal_index, stop_sign_found = self.check_for_stop_signs(waypoints, closest_index, goal_index)
+            goal_index, stop_sign_found = self.check_for_stop_signs(
+                waypoints, closest_index, goal_index
+            )
             self._goal_index = goal_index
             # goal_state = [x, y, v]
             self._goal_state = waypoints[self._goal_index]
@@ -117,7 +123,9 @@ class BehaviouralPlanner:
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
             if stop_sign_found:
-                print("[INFO] Stop sign found! Switch state to DECELERATE_TO_STOP")
+                print(
+                    "[INFO] Stop sign found! Switch state to DECELERATE_TO_STOP"
+                )
                 self._stopsign_idx = self._goal_index
                 # set the goal to zero speed
                 self._goal_state[2] = 0
@@ -154,8 +162,12 @@ class BehaviouralPlanner:
                 # --------------------------------------------------------------
                 stop_sign_found = False
 
-                closest_len, closest_index = get_closest_index(waypoints, ego_state)
-                self._goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
+                closest_len, closest_index = get_closest_index(
+                    waypoints, ego_state
+                )
+                self._goal_index = self.get_goal_index(
+                    waypoints, ego_state, closest_len, closest_index
+                )
                 self._goal_state = waypoints[self._goal_index]
                 # --------------------------------------------------------------
 
@@ -354,24 +366,37 @@ class BehaviouralPlanner:
         if not self._follow_lead_vehicle:
             # Compute the angle between the normalized vector between the lead vehicle
             # and ego vehicle position with the ego vehicle's heading vector.
-            lead_car_delta_vector = [lead_car_position[0] - ego_state[0], lead_car_position[1] - ego_state[1]]
+            lead_car_delta_vector = [
+                lead_car_position[0] - ego_state[0],
+                lead_car_position[1] - ego_state[1],
+            ]
             lead_car_distance = np.linalg.norm(lead_car_delta_vector)
             # In this case, the car is too far away.
             if lead_car_distance > self._follow_lead_vehicle_lookahead:
                 return
 
-            lead_car_delta_vector = np.divide(lead_car_delta_vector, lead_car_distance)
-            ego_heading_vector = [math.cos(ego_state[2]), math.sin(ego_state[2])]
+            lead_car_delta_vector = np.divide(
+                lead_car_delta_vector, lead_car_distance
+            )
+            ego_heading_vector = [
+                math.cos(ego_state[2]),
+                math.sin(ego_state[2]),
+            ]
             # Check to see if the relative angle between the lead vehicle and the ego
             # vehicle lies within +/- 45 degrees of the ego vehicle's heading.
-            if np.dot(lead_car_delta_vector, ego_heading_vector) < (1 / math.sqrt(2)):
+            if np.dot(lead_car_delta_vector, ego_heading_vector) < (
+                1 / math.sqrt(2)
+            ):
                 return
 
             self._follow_lead_vehicle = True
             print("[INFO] Follow lead vehicle, adjust forward speed!")
 
         else:
-            lead_car_delta_vector = [lead_car_position[0] - ego_state[0], lead_car_position[1] - ego_state[1]]
+            lead_car_delta_vector = [
+                lead_car_position[0] - ego_state[0],
+                lead_car_position[1] - ego_state[1],
+            ]
             lead_car_distance = np.linalg.norm(lead_car_delta_vector)
 
             # Add a 15m buffer to prevent oscillations for the distance check.
@@ -379,12 +404,20 @@ class BehaviouralPlanner:
                 return
             # Check to see if the lead vehicle is still within the ego vehicle's
             # frame of view.
-            lead_car_delta_vector = np.divide(lead_car_delta_vector, lead_car_distance)
-            ego_heading_vector = [math.cos(ego_state[2]), math.sin(ego_state[2])]
-            if np.dot(lead_car_delta_vector, ego_heading_vector) > (1 / math.sqrt(2)):
+            lead_car_delta_vector = np.divide(
+                lead_car_delta_vector, lead_car_distance
+            )
+            ego_heading_vector = [
+                math.cos(ego_state[2]),
+                math.sin(ego_state[2]),
+            ]
+            if np.dot(lead_car_delta_vector, ego_heading_vector) > (
+                1 / math.sqrt(2)
+            ):
                 return
 
             self._follow_lead_vehicle = False
+
 
 ######################################################
 ######################################################

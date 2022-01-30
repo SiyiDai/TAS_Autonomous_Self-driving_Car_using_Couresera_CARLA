@@ -4,7 +4,9 @@ import configparser
 
 def load_config(config_file):
     config = configparser.ConfigParser()
-    config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file))
+    config.read(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)
+    )
     demo_opt = config["Demo Parameters"]
     return demo_opt
 

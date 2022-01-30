@@ -9,12 +9,16 @@ import matplotlib.backends.tkagg as tkagg
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 import pygame
 
-class Dynamic2DFigure():
-    def __init__(self, 
-                 figsize=(8,8), 
-                 edgecolor="black", 
-                 rect=[0.1, 0.1, 0.8, 0.8],
-                 *args, **kwargs):
+
+class Dynamic2DFigure:
+    def __init__(
+        self,
+        figsize=(8, 8),
+        edgecolor="black",
+        rect=[0.1, 0.1, 0.8, 0.8],
+        *args,
+        **kwargs
+    ):
         self.graphs = {}
         self.texts = {}
         self.fig = plt.Figure(figsize=figsize, edgecolor=edgecolor)
@@ -32,29 +36,54 @@ class Dynamic2DFigure():
     def set_axis_equal(self):
         self.axis_equal = True
 
-    def add_graph(self, name, label="", window_size=10, x0=None, y0=None,
-                  linestyle='-', linewidth=1, marker="", color="k", 
-                  markertext=None, marker_text_offset=2):
+    def add_graph(
+        self,
+        name,
+        label="",
+        window_size=10,
+        x0=None,
+        y0=None,
+        linestyle="-",
+        linewidth=1,
+        marker="",
+        color="k",
+        markertext=None,
+        marker_text_offset=2,
+    ):
         self.marker_text_offset = marker_text_offset
 
         if x0 is None or y0 is None:
             x0 = np.zeros(window_size)
             y0 = np.zeros(window_size)
-            new_graph, = self.ax.plot(x0, y0, label=label, 
-                                      linestyle=linestyle, linewidth=linewidth,
-                                      marker=marker, color=color)
+            (new_graph,) = self.ax.plot(
+                x0,
+                y0,
+                label=label,
+                linestyle=linestyle,
+                linewidth=linewidth,
+                marker=marker,
+                color=color,
+            )
             if markertext is not None:
-                new_text = self.ax.text(x0[-1], y0[-1] + marker_text_offset, 
-                                         markertext)
+                new_text = self.ax.text(
+                    x0[-1], y0[-1] + marker_text_offset, markertext
+                )
         else:
-            new_graph, = self.ax.plot(x0, y0, label=label, 
-                                      linestyle=linestyle, linewidth=linewidth,
-                                      marker=marker, color=color)
+            (new_graph,) = self.ax.plot(
+                x0,
+                y0,
+                label=label,
+                linestyle=linestyle,
+                linewidth=linewidth,
+                marker=marker,
+                color=color,
+            )
             if markertext is not None:
-                new_text = self.ax.text(x0[-1], y0[-1] + marker_text_offset, 
-                                         markertext)
+                new_text = self.ax.text(
+                    x0[-1], y0[-1] + marker_text_offset, markertext
+                )
 
-        self.graphs[name]           = new_graph
+        self.graphs[name] = new_graph
         if markertext is not None:
             self.texts[name + "_TEXT"] = new_text
 
@@ -75,7 +104,7 @@ class Dynamic2DFigure():
             graph_text.set_position((x, y))
             self.rescale()
 
-    def update(self, name, new_x_vec, new_y_vec, new_colour='k'):
+    def update(self, name, new_x_vec, new_y_vec, new_colour="k"):
         graph = self.graphs[name]
         if graph is not None:
             graph.set_data((np.array(new_x_vec), np.array(new_y_vec)))
@@ -90,7 +119,7 @@ class Dynamic2DFigure():
 
     def rescale(self):
         xmin = float("inf")
-        xmax = -1*float("inf")
+        xmax = -1 * float("inf")
         ymin, ymax = self.ax.get_ylim()
         for name, graph in self.graphs.items():
             xvals, yvals = graph.get_data()
@@ -98,10 +127,10 @@ class Dynamic2DFigure():
             xmax_data = xvals.max()
             ymin_data = yvals.min()
             ymax_data = yvals.max()
-            xmin_padded = xmin_data-0.05*(xmax_data-xmin_data)
-            xmax_padded = xmax_data+0.05*(xmax_data-xmin_data)
-            ymin_padded = ymin_data-0.05*(ymax_data-ymin_data)
-            ymax_padded = ymax_data+0.05*(ymax_data-ymin_data)
+            xmin_padded = xmin_data - 0.05 * (xmax_data - xmin_data)
+            xmax_padded = xmax_data + 0.05 * (xmax_data - xmin_data)
+            ymin_padded = ymin_data - 0.05 * (ymax_data - ymin_data)
+            ymax_padded = ymax_data + 0.05 * (ymax_data - ymin_data)
             xmin = min(xmin_padded, xmin)
             xmax = max(xmax_padded, xmax)
             ymin = min(ymin_padded, ymin)
@@ -109,12 +138,12 @@ class Dynamic2DFigure():
         self.ax.set_xlim(xmin, xmax)
         self.ax.set_ylim(ymin, ymax)
         if self.axis_equal:
-            self.ax.set_aspect('equal')
+            self.ax.set_aspect("equal")
         if self.invert_xaxis:
             self.ax.invert_xaxis()
 
 
-class DynamicFigure():
+class DynamicFigure:
     def __init__(self, *args, **kwargs):
         self.graphs = {}
         self.fig = plt.Figure(figsize=(3, 2), edgecolor="black")
@@ -127,11 +156,11 @@ class DynamicFigure():
         if y0 is None:
             x0 = np.zeros(window_size)
             y0 = np.zeros(window_size)
-            new_graph, = self.ax.plot(x0, y0, label=label)
+            (new_graph,) = self.ax.plot(x0, y0, label=label)
         elif x0 is None:
-            new_graph, = self.ax.plot(y0, label=label)
+            (new_graph,) = self.ax.plot(y0, label=label)
         else:
-            new_graph, = self.ax.plot(x0, y0, label=label)
+            (new_graph,) = self.ax.plot(x0, y0, label=label)
         self.graphs[name] = new_graph
 
     def roll(self, name, new_x, new_y):
@@ -147,7 +176,7 @@ class DynamicFigure():
 
     def rescale(self):
         xmin = float("inf")
-        xmax = -1*float("inf")
+        xmax = -1 * float("inf")
         ymin, ymax = self.ax.get_ylim()
         for name, graph in self.graphs.items():
             xvals, yvals = graph.get_data()
@@ -155,10 +184,10 @@ class DynamicFigure():
             xmax_data = xvals.max()
             ymin_data = yvals.min()
             ymax_data = yvals.max()
-            xmin_padded = xmin_data-0.05*(xmax_data-xmin_data)
-            xmax_padded = xmax_data+0.05*(xmax_data-xmin_data)
-            ymin_padded = ymin_data-0.05*(ymax_data-ymin_data)
-            ymax_padded = ymax_data+0.05*(ymax_data-ymin_data)
+            xmin_padded = xmin_data - 0.05 * (xmax_data - xmin_data)
+            xmax_padded = xmax_data + 0.05 * (xmax_data - xmin_data)
+            ymin_padded = ymin_data - 0.05 * (ymax_data - ymin_data)
+            ymax_padded = ymax_data + 0.05 * (ymax_data - ymin_data)
             xmin = min(xmin_padded, xmin)
             xmax = max(xmax_padded, xmax)
             ymin = min(ymin_padded, ymin)
@@ -167,7 +196,7 @@ class DynamicFigure():
         self.ax.set_ylim(ymin, ymax)
 
 
-class LivePlotter():
+class LivePlotter:
     def __init__(self, tk_title=None):
         self._default_w = 150
         self._default_h = 100
@@ -187,11 +216,14 @@ class LivePlotter():
         if tk_title is not None:
             self._root.title(tk_title)
 
-        self._canvas = tk.Canvas(self._root, width=self._default_w, height=self._default_h)
+        self._canvas = tk.Canvas(
+            self._root, width=self._default_w, height=self._default_h
+        )
         self._canvas.config(bg="#6A6A6A")
         self._text_id = self._canvas.create_text(
-            (self._default_w/2, self._default_h/2),
-            text="No live plots\ncreated yet.")
+            (self._default_w / 2, self._default_h / 2),
+            text="No live plots\ncreated yet.",
+        )
         self._canvas.grid(row=0, column=0)
 
         self._display = None
@@ -223,7 +255,7 @@ class LivePlotter():
         self._canvas.grid(row=0, column=0)
 
         photo = tk.PhotoImage(master=self._canvas, width=f_w, height=f_h)
-        self._canvas.create_image(f_w/2, self._graph_h-f_h/2, image=photo)
+        self._canvas.create_image(f_w / 2, self._graph_h - f_h / 2, image=photo)
         tkagg.blit(photo, fca.get_renderer()._renderer, colormode=2)
         self._root.update()
 
@@ -261,17 +293,17 @@ class LivePlotter():
         tkagg.blit(
             self._photos[fig],
             self._fcas[fig].get_renderer()._renderer,
-            colormode=2)
+            colormode=2,
+        )
         self._root.update()
 
     def init_pygame(self):
         self._game_frame = tk.Frame(
-            self._root,
-            width=self._surf_w,
-            height=self._surf_h)
+            self._root, width=self._surf_w, height=self._surf_h
+        )
         self._game_frame.grid(row=0, column=1)
 
-        os.environ['SDL_WINDOWID'] = str(self._game_frame.winfo_id())
+        os.environ["SDL_WINDOWID"] = str(self._game_frame.winfo_id())
         self._game_frame.update()
         pygame.display.init()
 
@@ -291,7 +323,7 @@ class LivePlotter():
         self._display = pygame.display.set_mode((self._surf_w, self._surf_h))
 
         self._surfs.append(surf)
-        self._surf_coords[surf] = (self._surf_w-s_w, 0)
+        self._surf_coords[surf] = (self._surf_w - s_w, 0)
 
         self._display.blits(list(self._surf_coords.items()))
 

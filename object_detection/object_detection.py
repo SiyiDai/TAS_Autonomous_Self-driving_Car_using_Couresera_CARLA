@@ -26,25 +26,39 @@ PEDESTRIAN_BOX_Z_RADIUS = 2
 def object_detection(image_depth, image_segment, x, y, z):
 
     point_cloud = depth_to_pointcloud(image_depth)
-    segmented_image = image_converter.labels_to_cityscapes_palette(image_segment)
+    segmented_image = image_converter.labels_to_cityscapes_palette(
+        image_segment
+    )
 
     if segmented_image == VEHICLE_SEG_RANGE:
         vehicle_3d = segmented_image
         vehicle_cen = object_center_detection(vehicle_3d)
-        vehicle_x, vehicle_y, vehicle_z = obejct_position(vehicle_cen, point_cloud, x, y, z)
+        vehicle_x, vehicle_y, vehicle_z = obejct_position(
+            vehicle_cen, point_cloud, x, y, z
+        )
         write_vehicle_detection_to_txt(vehicle_x, vehicle_y, vehicle_z)
     elif segmented_image == PEDESTRIAN_SEG_RANGE:
         pedestrian_3d = segmented_image
         pedestrian_cen = object_center_detection(pedestrian_3d)
-        pedestrian_x, pedestrian_y, pedestrian_z = obejct_position(pedestrian_cen, point_cloud, x, y, z)
-        write_pedestrian_detection_to_txt(pedestrian_x, pedestrian_y, pedestrian_z)
+        pedestrian_x, pedestrian_y, pedestrian_z = obejct_position(
+            pedestrian_cen, point_cloud, x, y, z
+        )
+        write_pedestrian_detection_to_txt(
+            pedestrian_x, pedestrian_y, pedestrian_z
+        )
 
 
 def object_center_detection(object_3d):
-    object_det = (object_3d[:, :, 0] * object_3d[:, :, 1] * object_3d[:, :, 2]) * 255
+    object_det = (
+        object_3d[:, :, 0] * object_3d[:, :, 1] * object_3d[:, :, 2]
+    ) * 255
     object_det = ndimage.binary_erosion(object_det)
-    label_object = skimage.measure.label(object_det, connectivity=object_det.ndim)
-    props_object = skimage.measure.regionprops(label_object, intensity_image=None, cache=True)
+    label_object = skimage.measure.label(
+        object_det, connectivity=object_det.ndim
+    )
+    props_object = skimage.measure.regionprops(
+        label_object, intensity_image=None, cache=True
+    )
     object_cen = np.zeros([len(props_object), 2])
 
     for i in range(len(props_object)):
@@ -71,26 +85,55 @@ def obejct_position(object_cen, point_cloud, x, y, z):
 
 
 def write_vehicle_detection_to_txt(objectsx, objectsy, objectsz):
-    header = ["X(m)", "Y(m)", "Z(m)", "YAW(deg)", "BOX_X_RADIUS(m)", "BOX_Y_RADIUS(m)", "BOX_Z_RADIUS(m)"]
+    header = [
+        "X(m)",
+        "Y(m)",
+        "Z(m)",
+        "YAW(deg)",
+        "BOX_X_RADIUS(m)",
+        "BOX_Y_RADIUS(m)",
+        "BOX_Z_RADIUS(m)",
+    ]
     with open("parked_vehicle_params.txt", "w", encoding="UTF8") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         for i in range(0, len(objectsx)):
             locations = []
             vehicle_position = objectsx[i], objectsy[i], objectsz[i], YAW_ANGLE
-            vehicle_size = VEHICLE_BOX_X_RADIUS, VEHICLE_BOX_Y_RADIUS, VEHICLE_BOX_Z_RADIUS
+            vehicle_size = (
+                VEHICLE_BOX_X_RADIUS,
+                VEHICLE_BOX_Y_RADIUS,
+                VEHICLE_BOX_Z_RADIUS,
+            )
             locations.append(vehicle_position, vehicle_size)
             writer.writerow(locations)
 
 
 def write_pedestrian_detection_to_txt(objectsx, objectsy, objectsz):
-    header = ["X(m)", "Y(m)", "Z(m)", "YAW(deg)", "BOX_X_RADIUS(m)", "BOX_Y_RADIUS(m)", "BOX_Z_RADIUS(m)"]
+    header = [
+        "X(m)",
+        "Y(m)",
+        "Z(m)",
+        "YAW(deg)",
+        "BOX_X_RADIUS(m)",
+        "BOX_Y_RADIUS(m)",
+        "BOX_Z_RADIUS(m)",
+    ]
     with open("pedestrian_params.txt", "w", encoding="UTF8") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         for i in range(0, len(objectsx)):
             locations = []
-            pedesterian_position = objectsx[i], objectsy[i], objectsz[i], YAW_ANGLE
-            pedesterian_size = PEDESTRIAN_BOX_X_RADIUS, PEDESTRIAN_BOX_Y_RADIUS, PEDESTRIAN_BOX_Z_RADIUS
+            pedesterian_position = (
+                objectsx[i],
+                objectsy[i],
+                objectsz[i],
+                YAW_ANGLE,
+            )
+            pedesterian_size = (
+                PEDESTRIAN_BOX_X_RADIUS,
+                PEDESTRIAN_BOX_Y_RADIUS,
+                PEDESTRIAN_BOX_Z_RADIUS,
+            )
             locations.append(pedesterian_position, pedesterian_size)
             writer.writerow(locations)

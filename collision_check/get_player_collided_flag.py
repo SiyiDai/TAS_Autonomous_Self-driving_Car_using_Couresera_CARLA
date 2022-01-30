@@ -21,7 +21,9 @@ def get_player_collided_flag(measurement):
     current_collision_other = player_meas.collision_other
 
     collided_vehicles = current_collision_vehicles > prev_collision_vehicles
-    collided_pedestrians = current_collision_pedestrians > prev_collision_pedestrians
+    collided_pedestrians = (
+        current_collision_pedestrians > prev_collision_pedestrians
+    )
     collided_other = current_collision_other > prev_collision_other
 
     return collided_vehicles or collided_pedestrians or collided_other
