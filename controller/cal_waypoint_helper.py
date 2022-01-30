@@ -19,9 +19,7 @@ def cal_waypoint_distance(local_waypoints_np):
     return wp_distance
 
 
-def cal_waypoint_interpolate(
-    wp_distance, local_waypoints_np, interp_distance_res
-):
+def cal_waypoint_interpolate(wp_distance, local_waypoints_np, interp_distance_res):
     # Linearly interpolate between waypoints and store in a list
     wp_interp = []  # interpolated values
     # (rows = waypoints, columns = [x, y, v])
@@ -34,9 +32,7 @@ def cal_waypoint_interpolate(
         # points to interpolate based on the desired resolution and
         # incrementally add interpolated points until the next waypoint
         # is about to be reached.
-        num_pts_to_interp = int(
-            np.floor(wp_distance[i] / float(interp_distance_res)) - 1
-        )
+        num_pts_to_interp = int(np.floor(wp_distance[i] / float(interp_distance_res)) - 1)
         wp_vector = local_waypoints_np[i + 1] - local_waypoints_np[i]
         wp_uvector = wp_vector / np.linalg.norm(wp_vector[0:2])
 

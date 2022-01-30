@@ -80,9 +80,7 @@ def exec_waypoint_nav_demo(args):
         )
 
         # load global planner waypoints
-        waypoints, waypoints_np = load_waypoints(
-            waypoints_file=WAYPOINTS_FILENAME
-        )
+        waypoints, waypoints_np = load_waypoints(waypoints_file=WAYPOINTS_FILENAME)
 
         # Controller 2D Class Declaration
         controller = controller2d.Controller2D(waypoints)
@@ -107,9 +105,7 @@ def exec_waypoint_nav_demo(args):
             send_control_command(client, throttle=0.0, steer=0, brake=1.0)
             # Last stamp
             if i == num_iterations - 1:
-                sim_duration = (
-                    measurement_data.game_timestamp / 1000.0 - sim_start_stamp
-                )
+                sim_duration = measurement_data.game_timestamp / 1000.0 - sim_start_stamp
 
         TOTAL_EPISODE_FRAMES = cal_total_episode(sim_duration, num_iterations)
 
@@ -118,6 +114,21 @@ def exec_waypoint_nav_demo(args):
         measurement_data, sensor_data = client.read_data()
         start_timestamp = measurement_data.game_timestamp / 1000.0
         start_x, start_y, start_yaw = get_current_pose(measurement_data)
+
+        camera_depth_image = sensor_data.get("CameraDepth", None)
+        camera_semseg_image = sensor_data.get("CameraSemSeg", None)
+
+        if camera_depth_image is not None:
+            if camera_semseg_image is not None:
+                object_detection(camera_depth_image, camera_semseg_image, start_x, start_y)
+
+        camera_depth_image = sensor_data.get("CameraDepth", None)
+        camera_semseg_image = sensor_data.get("CameraSemSeg", None)
+
+        if camera_depth_image is not None:
+            if camera_semseg_image is not None:
+                object_detection(camera_depth_image, camera_semseg_image, start_x, start_y)
+
         send_control_command(client, throttle=0.0, steer=0, brake=1.0)
 
         # history = [x_history, y_history, yaw_history, time_history, speed_history, collided_flag_history]
@@ -145,9 +156,7 @@ def exec_waypoint_nav_demo(args):
             window_size_lookahead=INTERP_MAX_POINTS_PLOT,
         )
 
-        forward_speed_fig = add_forward_speed_fig(
-            lp_1d, window_size=TOTAL_EPISODE_FRAMES
-        )
+        forward_speed_fig = add_forward_speed_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
         throttle_fig = add_throttle_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
         brake_fig = add_brake_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
         steer_fig = add_steer_fig(lp_1d, window_size=TOTAL_EPISODE_FRAMES)
@@ -172,9 +181,7 @@ def exec_waypoint_nav_demo(args):
             SLOW_SPEED,
             STOP_LINE_BUFFER,
         )
-        bp = behavioural_planner.BehaviouralPlanner(
-            BP_LOOKAHEAD_BASE, stopsign_fences, LEAD_VEHICLE_LOOKAHEAD
-        )
+        bp = behavioural_planner.BehaviouralPlanner(BP_LOOKAHEAD_BASE, stopsign_fences, LEAD_VEHICLE_LOOKAHEAD)
 
         # Scenario Execution Loop
 
@@ -193,9 +200,7 @@ def exec_waypoint_nav_demo(args):
 
             # Update pose and timestamp
             prev_timestamp = current_timestamp
-            current_x, current_y, current_yaw = get_current_pose(
-                measurement_data
-            )
+            current_x, current_y, current_yaw = get_current_pose(measurement_data)
             current_speed = measurement_data.player_measurements.forward_speed
             current_timestamp = float(measurement_data.game_timestamp) / 1000.0
 
@@ -220,27 +225,19 @@ def exec_waypoint_nav_demo(args):
 
             # Local Planner Update:
             # This will use the behavioural_planner.py and local_planner.py
-            lead_car_pos, lead_car_length, lead_car_speed = load_lead_car(
-                measurement_data
-            )
-            _update_local_planner = update_local_planner(
-                frame, LP_FREQUENCY_DIVISOR
-            )
+            lead_car_pos, lead_car_length, lead_car_speed = load_lead_car(measurement_data)
+            _update_local_planner = update_local_planner(frame, LP_FREQUENCY_DIVISOR)
 
             if _update_local_planner:
                 # Compute open loop speed estimate.
-                open_loop_speed = lp._velocity_planner.get_open_loop_speed(
-                    current_timestamp - prev_timestamp
-                )
+                open_loop_speed = lp._velocity_planner.get_open_loop_speed(current_timestamp - prev_timestamp)
 
                 # Calculate the goal state set in the local frame for the local planner.
                 # Current speed should be open loop for the velocity profile generation.
                 ego_state = [current_x, current_y, current_yaw, open_loop_speed]
 
                 # Set lookahead based on current speed.
-                bp.set_lookahead(
-                    BP_LOOKAHEAD_BASE + BP_LOOKAHEAD_TIME * open_loop_speed
-                )
+                bp.set_lookahead(BP_LOOKAHEAD_BASE + BP_LOOKAHEAD_TIME * open_loop_speed)
 
                 # Perform a state transition in the behavioural planner.
                 bp.transition_state(waypoints, ego_state, current_speed)
@@ -249,9 +246,7 @@ def exec_waypoint_nav_demo(args):
                 bp.check_for_lead_vehicle(ego_state, lead_car_pos[1])
 
                 # Compute the goal state set from the behavioural planner's computed goal state.
-                goal_state_set = lp.get_goal_state_set(
-                    bp._goal_index, bp._goal_state, waypoints, ego_state
-                )
+                goal_state_set = lp.get_goal_state_set(bp._goal_index, bp._goal_state, waypoints, ego_state)
 
                 # Calculate planned paths in the local frame.
                 paths, path_validity = lp.plan_paths(goal_state_set)
@@ -260,14 +255,10 @@ def exec_waypoint_nav_demo(args):
                 paths = local_planner.transform_paths(paths, ego_state)
 
                 # Perform collision checking.
-                collision_check_array = lp._collision_checker.collision_check(
-                    paths, [parkedcar_box_pts]
-                )
+                collision_check_array = lp._collision_checker.collision_check(paths, [parkedcar_box_pts])
 
                 # Compute the best local path.
-                best_index = lp._collision_checker.select_best_path_index(
-                    paths, collision_check_array, bp._goal_state
-                )
+                best_index = lp._collision_checker.select_best_path_index(paths, collision_check_array, bp._goal_state)
                 # If no path was feasible, continue to follow the previous best path.
                 if best_index == None:
                     best_path = lp._prev_best_path
@@ -284,9 +275,7 @@ def exec_waypoint_nav_demo(args):
                     lead_car_pos[1][1],
                     lead_car_speed[1],
                 ]
-                decelerate_to_stop = (
-                    bp._state == behavioural_planner.DECELERATE_TO_STOP
-                )
+                decelerate_to_stop = bp._state == behavioural_planner.DECELERATE_TO_STOP
                 local_waypoints = lp._velocity_planner.compute_velocity_profile(
                     best_path,
                     desired_speed,
@@ -334,9 +323,7 @@ def exec_waypoint_nav_demo(args):
             elif local_waypoints == None:
                 pass
             else:
-                trajectory_fig_upadte(
-                    trajectory_fig, current_x, current_y, lead_car_pos
-                )
+                trajectory_fig_upadte(trajectory_fig, current_x, current_y, lead_car_pos)
                 control_fig_update(
                     forward_speed_fig,
                     throttle_fig,
@@ -362,32 +349,23 @@ def exec_waypoint_nav_demo(args):
                         ego_state,
                     )
                 # lookahead path plotter update
-                trajectory_fig_lookahead_path_update(
-                    trajectory_fig, wp_interp, INTERP_MAX_POINTS_PLOT
-                )
+                trajectory_fig_lookahead_path_update(trajectory_fig, wp_interp, INTERP_MAX_POINTS_PLOT)
 
                 # Refresh the live plot based on the refresh rate
                 # set by the options
-                if (
-                    enable_live_plot
-                    and live_plot_timer.has_exceeded_lap_period()
-                ):
+                if enable_live_plot and live_plot_timer.has_exceeded_lap_period():
                     lp_traj.refresh()
                     lp_1d.refresh()
                     live_plot_timer.lap()
 
             # Output controller command to CARLA server
-            send_control_command(
-                client, throttle=cmd_throttle, steer=cmd_steer, brake=cmd_brake
-            )
+            send_control_command(client, throttle=cmd_throttle, steer=cmd_steer, brake=cmd_brake)
 
             # Find if reached the end of waypoint. If the car is within
             # DIST_THRESHOLD_TO_LAST_WAYPOINT to the last waypoint,
             # the simulation will end.
             dist_to_last_waypoint = np.linalg.norm(
-                np.array(
-                    [waypoints[-1][0] - current_x, waypoints[-1][1] - current_y]
-                )
+                np.array([waypoints[-1][0] - current_x, waypoints[-1][1] - current_y])
             )
             if dist_to_last_waypoint < DIST_THRESHOLD_TO_LAST_WAYPOINT:
                 reached_the_end = True

@@ -28,9 +28,7 @@ class Timer(object):
         self._lap_time = time.time()
 
     def ticks_per_second(self):
-        return (
-            float(self.step - self._lap_step) / self.elapsed_seconds_since_lap()
-        )
+        return float(self.step - self._lap_step) / self.elapsed_seconds_since_lap()
 
     def elapsed_seconds_since_lap(self):
         return time.time() - self._lap_time

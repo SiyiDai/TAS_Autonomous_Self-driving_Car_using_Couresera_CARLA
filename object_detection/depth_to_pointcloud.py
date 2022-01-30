@@ -23,18 +23,12 @@ def depth_to_pointcloud(image, color=None, max_depth=0.9):
     k = numpy.identity(3)
     k[0, 2] = image.width / 2.0
     k[1, 2] = image.height / 2.0
-    k[0, 0] = k[1, 1] = image.width / (
-        2.0 * math.tan(image.fov * math.pi / 360.0)
-    )
+    k[0, 0] = k[1, 1] = image.width / (2.0 * math.tan(image.fov * math.pi / 360.0))
 
     # 2d pixel coordinates
     pixel_length = image.width * image.height
-    u_coord = repmat(
-        numpy.r_[image.width - 1 : -1 : -1], image.height, 1
-    ).reshape(pixel_length)
-    v_coord = repmat(
-        numpy.c_[image.height - 1 : -1 : -1], 1, image.width
-    ).reshape(pixel_length)
+    u_coord = repmat(numpy.r_[image.width - 1 : -1 : -1], image.height, 1).reshape(pixel_length)
+    v_coord = repmat(numpy.c_[image.height - 1 : -1 : -1], 1, image.width).reshape(pixel_length)
     if color is not None:
         color = color.reshape(pixel_length, 3)
     normalized_depth = numpy.reshape(normalized_depth, pixel_length)

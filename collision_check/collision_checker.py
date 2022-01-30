@@ -85,12 +85,8 @@ class CollisionChecker:
                 # --------------------------------------------------------------
                 # circle_x = point_x + circle_offset*cos(yaw)
                 # circle_y = point_y + circle_offset*sin(yaw)
-                circle_locations[:, 0] = path[0][j] + np.array(
-                    self._circle_offsets
-                ) * cos(path[2][j])
-                circle_locations[:, 1] = path[1][j] + np.array(
-                    self._circle_offsets
-                ) * sin(path[2][j])
+                circle_locations[:, 0] = path[0][j] + np.array(self._circle_offsets) * cos(path[2][j])
+                circle_locations[:, 1] = path[1][j] + np.array(self._circle_offsets) * sin(path[2][j])
                 # --------------------------------------------------------------
 
                 # Assumes each obstacle is approximated by a collection of
@@ -100,15 +96,9 @@ class CollisionChecker:
                 # If so, then the path will collide with an obstacle and
                 # the collision_free flag should be set to false for this flag
                 for k in range(len(obstacles)):
-                    collision_dists = scipy.spatial.distance.cdist(
-                        obstacles[k], circle_locations
-                    )
-                    collision_dists = np.subtract(
-                        collision_dists, self._circle_radii
-                    )
-                    collision_free = collision_free and not np.any(
-                        collision_dists < 0
-                    )
+                    collision_dists = scipy.spatial.distance.cdist(obstacles[k], circle_locations)
+                    collision_dists = np.subtract(collision_dists, self._circle_radii)
+                    collision_free = collision_free and not np.any(collision_dists < 0)
 
                     if not collision_free:
                         break

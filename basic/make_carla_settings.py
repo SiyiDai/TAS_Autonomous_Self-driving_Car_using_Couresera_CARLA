@@ -3,6 +3,12 @@ import os
 
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 from carla.settings import CarlaSettings
+from carla import sensor
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+MINI_WINDOW_WIDTH = 320
+MINI_WINDOW_HEIGHT = 180
 
 NUM_PEDESTRIANS = 0  # total number of pedestrians to spawn 0
 NUM_VEHICLES = 2  # total number of vehicles to spawn 2
@@ -39,6 +45,22 @@ def make_carla_settings(args):
     get_non_player_agents_info = False
     if NUM_PEDESTRIANS > 0 or NUM_VEHICLES > 0:
         get_non_player_agents_info = True
+
+    camera0 = sensor.Camera("CameraRGB")
+    camera0.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
+    camera0.set_position(2.0, 0.0, 1.4)
+    camera0.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(camera0)
+    camera1 = sensor.Camera("CameraDepth", PostProcessing="Depth")
+    camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    camera1.set_position(2.0, 0.0, 1.4)
+    camera1.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(camera1)
+    camera2 = sensor.Camera("CameraSemSeg", PostProcessing="SemanticSegmentation")
+    camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    camera2.set_position(2.0, 0.0, 1.4)
+    camera2.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(camera2)
 
     # Base level settings
     settings.set(

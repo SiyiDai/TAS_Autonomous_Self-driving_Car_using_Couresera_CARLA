@@ -11,14 +11,7 @@ import pygame
 
 
 class Dynamic2DFigure:
-    def __init__(
-        self,
-        figsize=(8, 8),
-        edgecolor="black",
-        rect=[0.1, 0.1, 0.8, 0.8],
-        *args,
-        **kwargs
-    ):
+    def __init__(self, figsize=(8, 8), edgecolor="black", rect=[0.1, 0.1, 0.8, 0.8], *args, **kwargs):
         self.graphs = {}
         self.texts = {}
         self.fig = plt.Figure(figsize=figsize, edgecolor=edgecolor)
@@ -65,9 +58,7 @@ class Dynamic2DFigure:
                 color=color,
             )
             if markertext is not None:
-                new_text = self.ax.text(
-                    x0[-1], y0[-1] + marker_text_offset, markertext
-                )
+                new_text = self.ax.text(x0[-1], y0[-1] + marker_text_offset, markertext)
         else:
             (new_graph,) = self.ax.plot(
                 x0,
@@ -79,9 +70,7 @@ class Dynamic2DFigure:
                 color=color,
             )
             if markertext is not None:
-                new_text = self.ax.text(
-                    x0[-1], y0[-1] + marker_text_offset, markertext
-                )
+                new_text = self.ax.text(x0[-1], y0[-1] + marker_text_offset, markertext)
 
         self.graphs[name] = new_graph
         if markertext is not None:
@@ -216,9 +205,7 @@ class LivePlotter:
         if tk_title is not None:
             self._root.title(tk_title)
 
-        self._canvas = tk.Canvas(
-            self._root, width=self._default_w, height=self._default_h
-        )
+        self._canvas = tk.Canvas(self._root, width=self._default_w, height=self._default_h)
         self._canvas.config(bg="#6A6A6A")
         self._text_id = self._canvas.create_text(
             (self._default_w / 2, self._default_h / 2),
@@ -298,9 +285,7 @@ class LivePlotter:
         self._root.update()
 
     def init_pygame(self):
-        self._game_frame = tk.Frame(
-            self._root, width=self._surf_w, height=self._surf_h
-        )
+        self._game_frame = tk.Frame(self._root, width=self._surf_w, height=self._surf_h)
         self._game_frame.grid(row=0, column=1)
 
         os.environ["SDL_WINDOWID"] = str(self._game_frame.winfo_id())
