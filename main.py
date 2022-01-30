@@ -115,13 +115,7 @@ def exec_waypoint_nav_demo(args):
         start_timestamp = measurement_data.game_timestamp / 1000.0
         start_x, start_y, start_yaw = get_current_pose(measurement_data)
 
-        camera_depth_image = sensor_data.get("CameraDepth", None)
-        camera_semseg_image = sensor_data.get("CameraSemSeg", None)
-
-        if camera_depth_image is not None:
-            if camera_semseg_image is not None:
-                object_detection(camera_depth_image, camera_semseg_image, start_x, start_y)
-
+        # get camera images for object detection
         camera_depth_image = sensor_data.get("CameraDepth", None)
         camera_semseg_image = sensor_data.get("CameraSemSeg", None)
 
