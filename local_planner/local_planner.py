@@ -111,12 +111,13 @@ class LocalPlanner:
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
         if goal_index == len(waypoints) - 1:
+            # when reaching end point, no next index
             delta_x = waypoints[goal_index][0] - waypoints[goal_index - 1][0]
             delta_y = waypoints[goal_index][1] - waypoints[goal_index - 1][1]
         else:
             delta_x = waypoints[goal_index + 1][0] - waypoints[goal_index][0]
             delta_y = waypoints[goal_index + 1][1] - waypoints[goal_index][1]
-        heading = np.arctan2(delta_y, delta_x)
+        goal_heading = np.arctan2(delta_y, delta_x)
         # ------------------------------------------------------------------
 
         # Compute the center goal state in the local frame using
@@ -148,7 +149,8 @@ class LocalPlanner:
         # current ego yaw from the heading variable.
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
-        goal_t = heading - ego_state[2]
+        # t for theta
+        goal_t = goal_heading - ego_state[2]
         # ------------------------------------------------------------------
 
         # Velocity is preserved after the transformation.
