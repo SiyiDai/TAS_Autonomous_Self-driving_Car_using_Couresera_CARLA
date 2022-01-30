@@ -49,7 +49,7 @@ def make_carla_settings(args):
     # set cameras for object detection
     set_depth_camera(sensor, settings)
     set_semseg_camera(sensor, settings)
-    
+
     # Base level settings
     settings.set(
         SynchronousMode=True,
@@ -71,6 +71,7 @@ def set_camera(sensor, settings):
     RGB_camera.set_rotation(0.0, 0.0, 0.0)
     settings.add_sensor(RGB_camera)
 
+
 def set_depth_camera(sensor, settings):
     depth_camera = sensor.Camera("CameraDepth", PostProcessing="Depth")
     depth_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
@@ -78,9 +79,10 @@ def set_depth_camera(sensor, settings):
     depth_camera.set_rotation(0.0, 0.0, 0.0)
     settings.add_sensor(depth_camera)
 
+
 def set_semseg_camera(sensor, settings):
     semseg_camera = sensor.Camera("CameraSemSeg", PostProcessing="SemanticSegmentation")
     semseg_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
     semseg_camera.set_position(2.0, 0.0, 1.4)
     semseg_camera.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(semseg_camera)    
+    settings.add_sensor(semseg_camera)
