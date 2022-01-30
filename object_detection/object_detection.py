@@ -70,8 +70,8 @@ def obejct_position(object_cen, point_cloud, x, y):
         object_y.append(point_cloud[1, int(location)] + y)
         # object_z.append(point_cloud[2, int(location)])
 
-    print("x cord:" + str(object_x))
-    print("y cord:" + str(object_y))
+    # print("x cord:" + str(object_x))
+    # print("y cord:" + str(object_y))
 
     return object_x, object_y
 

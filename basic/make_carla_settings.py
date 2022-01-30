@@ -46,22 +46,10 @@ def make_carla_settings(args):
     if NUM_PEDESTRIANS > 0 or NUM_VEHICLES > 0:
         get_non_player_agents_info = True
 
-    camera0 = sensor.Camera("CameraRGB")
-    camera0.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
-    camera0.set_position(2.0, 0.0, 1.4)
-    camera0.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera0)
-    camera1 = sensor.Camera("CameraDepth", PostProcessing="Depth")
-    camera1.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera1.set_position(2.0, 0.0, 1.4)
-    camera1.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera1)
-    camera2 = sensor.Camera("CameraSemSeg", PostProcessing="SemanticSegmentation")
-    camera2.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
-    camera2.set_position(2.0, 0.0, 1.4)
-    camera2.set_rotation(0.0, 0.0, 0.0)
-    settings.add_sensor(camera2)
-
+    # set cameras for object detection
+    set_depth_camera(sensor, settings)
+    set_semseg_camera(sensor, settings)
+    
     # Base level settings
     settings.set(
         SynchronousMode=True,
@@ -74,3 +62,25 @@ def make_carla_settings(args):
         QualityLevel=args.quality_level,
     )
     return settings
+
+
+def set_camera(sensor, settings):
+    RGB_camera = sensor.Camera("CameraRGB")
+    RGB_camera.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
+    RGB_camera.set_position(2.0, 0.0, 1.4)
+    RGB_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(RGB_camera)
+
+def set_depth_camera(sensor, settings):
+    depth_camera = sensor.Camera("CameraDepth", PostProcessing="Depth")
+    depth_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    depth_camera.set_position(2.0, 0.0, 1.4)
+    depth_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(depth_camera)
+
+def set_semseg_camera(sensor, settings):
+    semseg_camera = sensor.Camera("CameraSemSeg", PostProcessing="SemanticSegmentation")
+    semseg_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    semseg_camera.set_position(2.0, 0.0, 1.4)
+    semseg_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(semseg_camera)    
