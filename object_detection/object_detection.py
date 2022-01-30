@@ -23,7 +23,7 @@ PEDESTRIAN_BOX_Y_RADIUS = 1
 PEDESTRIAN_BOX_Z_RADIUS = 2
 
 
-def object_detection(image_depth, image_segment, x, y, z):
+def object_detection(image_depth, image_segment, x, y):
 
     point_cloud = depth_to_pointcloud(image_depth)
     segmented_image = image_converter.labels_to_cityscapes_palette(
@@ -34,14 +34,14 @@ def object_detection(image_depth, image_segment, x, y, z):
         vehicle_3d = segmented_image
         vehicle_cen = object_center_detection(vehicle_3d)
         vehicle_x, vehicle_y, vehicle_z = obejct_position(
-            vehicle_cen, point_cloud, x, y, z
+            vehicle_cen, point_cloud, x, y
         )
         write_vehicle_detection_to_txt(vehicle_x, vehicle_y, vehicle_z)
     elif segmented_image == PEDESTRIAN_SEG_RANGE:
         pedestrian_3d = segmented_image
         pedestrian_cen = object_center_detection(pedestrian_3d)
         pedestrian_x, pedestrian_y, pedestrian_z = obejct_position(
-            pedestrian_cen, point_cloud, x, y, z
+            pedestrian_cen, point_cloud, x, y
         )
         write_pedestrian_detection_to_txt(
             pedestrian_x, pedestrian_y, pedestrian_z
@@ -67,21 +67,21 @@ def object_center_detection(object_3d):
     return object_cen
 
 
-def obejct_position(object_cen, point_cloud, x, y, z):
+def obejct_position(object_cen, point_cloud, x, y):
     object_x = []
     object_y = []
-    object_z = []
+    # object_z = []
 
     for i in object_cen:
         location = i[1] + i[0] * IMAGE_HEIGHT
         object_x.append(point_cloud[0, int(location)] + x)
         object_y.append(point_cloud[1, int(location)] + y)
-        object_z.append(point_cloud[2, int(location)])
+        # object_z.append(point_cloud[2, int(location)])
 
     print("x cord:" + str(object_x))
     print("y cord:" + str(object_y))
 
-    return object_x, object_y, object_z
+    return object_x, object_y
 
 
 def write_vehicle_detection_to_txt(objectsx, objectsy, objectsz):
