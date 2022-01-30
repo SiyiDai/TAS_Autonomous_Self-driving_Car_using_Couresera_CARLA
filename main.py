@@ -26,9 +26,11 @@ from basic.cal_timestep import *
 from basic.make_carla_settings import *
 from basic.load_config import *
 
+import live_plotter_helpers.live_plotter as lv  # Custom live plotting library
 from live_plotter_helpers.control_fig_helper import *
 from live_plotter_helpers.trajectory_fig_helper import *
 from live_plotter_helpers.history_helper import *
+
 from collision_check.get_player_collided_flag import *
 from controller.controller_utils import *
 from controller.cal_waypoint_helper import *
@@ -38,7 +40,6 @@ from local_planner.local_planner import update_local_planner
 
 # Script level imports
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
-import live_plotter as lv  # Custom live plotting library
 from carla.client import make_carla_client
 from carla.tcp import TCPConnectionError
 
