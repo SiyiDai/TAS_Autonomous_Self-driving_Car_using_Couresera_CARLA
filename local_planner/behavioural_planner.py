@@ -145,35 +145,27 @@ class BehaviouralPlanner:
             # passed the stop sign, return to lane following.
             # You should use the get_closest_index(), get_goal_index(), and
             # check_for_stop_signs() helper functions.
-            print("[INFO] stop count: ", self._stop_count)
+            print("[INFO] Stop count: ", self._stop_count)
             if self._stop_count == STOP_COUNTS:
-                # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
-                # --------------------------------------------------------------
-                closest_len, closest_index = get_closest_index(waypoints, ego_state)
-                goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
-                # --------------------------------------------------------------
-
                 # We've stopped for the required amount of time, so the new goal
                 # index for the stop line is not relevant. Use the goal index
                 # that is the lookahead distance away.
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
-                # _, stop_sign_found = self.check_for_stop_signs(waypoints, closest_index, goal_index)
                 stop_sign_found = False
-                self._goal_index = goal_index
+
+                closest_len, closest_index = get_closest_index(waypoints, ego_state)
+                self._goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
                 self._goal_state = waypoints[self._goal_index]
-                # print("[INFO] IN STAY_STOPPED - goal_index: ", self._goal_index)
-                # print("[INFO] IN STAY_STOPPED - goal_state: ", self._goal_state)
                 # --------------------------------------------------------------
 
                 # If the stop sign is no longer along our path, we can now
                 # transition back to our lane following state.
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
-                if not stop_sign_found:
-                    print("[INFO] Stop sign passed! Switch state to FOLLOW_LANE")
-                    self._state = FOLLOW_LANE
-                    self._stop_count = 0
+                print("[INFO] Stop sign passed! Switch state to FOLLOW_LANE")
+                self._state = FOLLOW_LANE
+                self._stop_count = 0
                 # --------------------------------------------------------------
 
             # Otherwise, continue counting.
