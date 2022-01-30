@@ -18,5 +18,8 @@ def cal_total_episode(sim_duration, num_iterations):
     # parameters that we set in the beginning.
     SIMULATION_TIME_STEP = sim_duration / float(num_iterations)
     print("SERVER SIMULATION STEP APPROXIMATION: " + str(SIMULATION_TIME_STEP))
-    total_episode_frames = int((TOTAL_RUN_TIME + WAIT_TIME_BEFORE_START) / SIMULATION_TIME_STEP) + TOTAL_FRAME_BUFFER
+    total_episode_frames = (
+        int((TOTAL_RUN_TIME + WAIT_TIME_BEFORE_START) / SIMULATION_TIME_STEP)
+        + TOTAL_FRAME_BUFFER
+    )
     return total_episode_frames

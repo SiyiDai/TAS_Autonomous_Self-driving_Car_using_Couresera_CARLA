@@ -28,7 +28,9 @@ def make_carla_settings(args):
 
     # Base level settings
     settings.set(
-        SynchronousMode=True, SendNonPlayerAgentsInfo=get_non_player_agents_info, QualityLevel=args.quality_level
+        SynchronousMode=True,
+        SendNonPlayerAgentsInfo=get_non_player_agents_info,
+        QualityLevel=args.quality_level,
     )
     return settings
 
@@ -77,7 +79,9 @@ def main(args):
         source_ori = 0, 0
         node_target = 92.34, 86.73282105965863
         target_ori = 0, 0
-        route = citytrack.compute_route(node_source, source_ori, node_target, target_ori)
+        route = citytrack.compute_route(
+            node_source, source_ori, node_target, target_ori
+        )
         # route_trace = grp.trace_route(origin, destination)
         # print(route_trace)
 
@@ -92,14 +96,30 @@ if __name__ == "__main__":
 
     try:
         argparser = argparse.ArgumentParser(description=__doc__)
-        argparser.add_argument("-v", "--verbose", action="store_true", dest="debug", help="print debug information")
         argparser.add_argument(
-            "--host", metavar="H", default="localhost", help="IP of the host server (default: localhost)"
+            "-v",
+            "--verbose",
+            action="store_true",
+            dest="debug",
+            help="print debug information",
         )
         argparser.add_argument(
-            "-p", "--port", metavar="P", default=2000, type=int, help="TCP port to listen to (default: 2000)"
+            "--host",
+            metavar="H",
+            default="localhost",
+            help="IP of the host server (default: localhost)",
         )
-        argparser.add_argument("-a", "--autopilot", action="store_true", help="enable autopilot")
+        argparser.add_argument(
+            "-p",
+            "--port",
+            metavar="P",
+            default=2000,
+            type=int,
+            help="TCP port to listen to (default: 2000)",
+        )
+        argparser.add_argument(
+            "-a", "--autopilot", action="store_true", help="enable autopilot"
+        )
         argparser.add_argument(
             "-q",
             "--quality-level",

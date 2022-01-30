@@ -9,14 +9,30 @@ def argparser_add_argument(argparser):
         -i, --images-to-disk: save images to disk
         -c, --carla-settings: Path to CarlaSettings.ini file
     """
-    argparser.add_argument("-v", "--verbose", action="store_true", dest="debug", help="print debug information")
     argparser.add_argument(
-        "--host", metavar="H", default="localhost", help="IP of the host server (default: localhost)"
+        "-v",
+        "--verbose",
+        action="store_true",
+        dest="debug",
+        help="print debug information",
     )
     argparser.add_argument(
-        "-p", "--port", metavar="P", default=2000, type=int, help="TCP port to listen to (default: 2000)"
+        "--host",
+        metavar="H",
+        default="localhost",
+        help="IP of the host server (default: localhost)",
     )
-    argparser.add_argument("-a", "--autopilot", action="store_true", help="enable autopilot")
+    argparser.add_argument(
+        "-p",
+        "--port",
+        metavar="P",
+        default=2000,
+        type=int,
+        help="TCP port to listen to (default: 2000)",
+    )
+    argparser.add_argument(
+        "-a", "--autopilot", action="store_true", help="enable autopilot"
+    )
     argparser.add_argument(
         "-q",
         "--quality-level",

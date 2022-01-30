@@ -13,7 +13,9 @@ def trajectory_fig_lookahead_path_update(trajectory_fig, wp_interp, interp_max):
     # When plotting lookahead path, only plot a number of points. This is meant
     # to decrease load when live plotting
     wp_interp_np = np.array(wp_interp)
-    path_indices = np.floor(np.linspace(0, wp_interp_np.shape[0] - 1, interp_max))
+    path_indices = np.floor(
+        np.linspace(0, wp_interp_np.shape[0] - 1, interp_max)
+    )
     trajectory_fig.update(
         "selected_path",
         wp_interp_np[path_indices.astype(int), 0],
@@ -23,7 +25,13 @@ def trajectory_fig_lookahead_path_update(trajectory_fig, wp_interp, interp_max):
 
 
 def trajectory_fig_local_path_update(
-    trajectory_fig, num_paths, path_validity, collision_check_array, best_index, paths, ego_state
+    trajectory_fig,
+    num_paths,
+    path_validity,
+    collision_check_array,
+    best_index,
+    paths,
+    ego_state,
 ):
     path_counter = 0
     for i in range(num_paths):
@@ -36,10 +44,17 @@ def trajectory_fig_local_path_update(
                 colour = "k"
             else:
                 colour = "b"
-            trajectory_fig.update("local_path " + str(i), paths[path_counter][0], paths[path_counter][1], colour)
+            trajectory_fig.update(
+                "local_path " + str(i),
+                paths[path_counter][0],
+                paths[path_counter][1],
+                colour,
+            )
             path_counter += 1
         else:
-            trajectory_fig.update("local_path " + str(i), [ego_state[0]], [ego_state[1]], "r")
+            trajectory_fig.update(
+                "local_path " + str(i), [ego_state[0]], [ego_state[1]], "r"
+            )
 
 
 def trajectory_fig_set_all(
@@ -54,14 +69,18 @@ def trajectory_fig_set_all(
     window_size_lookahead,
 ):
     trajectory_fig_add_waypoints(trajectory_fig, waypoints_np)
-    trajectory_fig_add_trajectory_markers(trajectory_fig, start_x, start_y, window_size=window_size_traj)
+    trajectory_fig_add_trajectory_markers(
+        trajectory_fig, start_x, start_y, window_size=window_size_traj
+    )
     trajectory_fig_add_starting_position(trajectory_fig, start_x, start_y)
     trajectory_fig_add_end_position(trajectory_fig, waypoints_np)
     trajectory_fig_add_car_marker(trajectory_fig)
     trajectory_fig_add_lead_car_information(trajectory_fig)
     trajectory_fig_add_stop_sign(trajectory_fig, stopsign_fences)
     trajectory_fig_add_parked_car_points(trajectory_fig, parkedcar_box_pts)
-    trajectory_fig_add_lookahead_path(trajectory_fig, start_x, start_y, window_size=window_size_lookahead)
+    trajectory_fig_add_lookahead_path(
+        trajectory_fig, start_x, start_y, window_size=window_size_lookahead
+    )
     trajectory_fig_add_local_path_proposals(trajectory_fig, num_paths)
 
 
@@ -81,13 +100,25 @@ def trajectory_fig_initialize(lp_traj, fig_size, plot_rect):
 
 def trajectory_fig_add_car_marker(trajectory_fig):
     # Add car marker
-    trajectory_fig.add_graph("car", window_size=1, marker="s", color="b", markertext="Car", marker_text_offset=1)
+    trajectory_fig.add_graph(
+        "car",
+        window_size=1,
+        marker="s",
+        color="b",
+        markertext="Car",
+        marker_text_offset=1,
+    )
 
 
 def trajectory_fig_add_lead_car_information(trajectory_fig):
     # Add lead car information
     trajectory_fig.add_graph(
-        "leadcar", window_size=1, marker="s", color="g", markertext="Lead Car", marker_text_offset=1
+        "leadcar",
+        window_size=1,
+        marker="s",
+        color="g",
+        markertext="Lead Car",
+        marker_text_offset=1,
     )
 
 
@@ -108,10 +139,18 @@ def trajectory_fig_add_parked_car_points(trajectory_fig, parkedcar_box_pts):
 def trajectory_fig_add_local_path_proposals(trajectory_fig, num_paths):
     # Add local path proposals
     for i in range(num_paths):
-        trajectory_fig.add_graph("local_path " + str(i), window_size=200, x0=None, y0=None, color=[0.0, 0.0, 1.0])
+        trajectory_fig.add_graph(
+            "local_path " + str(i),
+            window_size=200,
+            x0=None,
+            y0=None,
+            color=[0.0, 0.0, 1.0],
+        )
 
 
-def trajectory_fig_add_lookahead_path(trajectory_fig, start_x, start_y, window_size):
+def trajectory_fig_add_lookahead_path(
+    trajectory_fig, start_x, start_y, window_size
+):
     # Add lookahead path
     trajectory_fig.add_graph(
         "selected_path",
@@ -136,7 +175,9 @@ def trajectory_fig_add_waypoints(trajectory_fig, waypoints_np):
     )
 
 
-def trajectory_fig_add_trajectory_markers(trajectory_fig, start_x, start_y, window_size):
+def trajectory_fig_add_trajectory_markers(
+    trajectory_fig, start_x, start_y, window_size
+):
     # Add trajectory markers
     trajectory_fig.add_graph(
         "trajectory",

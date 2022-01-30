@@ -58,13 +58,17 @@ def get_trafficlight_trigger_location(traffic_light):
     area_loc = base_transform.transform(traffic_light.trigger_volume.location)
     area_ext = traffic_light.trigger_volume.extent
 
-    point = rotate_point(carla.Vector3D(0, 0, area_ext.z), math.radians(base_rot))
+    point = rotate_point(
+        carla.Vector3D(0, 0, area_ext.z), math.radians(base_rot)
+    )
     point_location = area_loc + carla.Location(x=point.x, y=point.y)
 
     return carla.Location(point_location.x, point_location.y, point_location.z)
 
 
-def is_within_distance(target_transform, reference_transform, max_distance, angle_interval=None):
+def is_within_distance(
+    target_transform, reference_transform, max_distance, angle_interval=None
+):
     """
     Check if a location is both within a certain distance from a reference object.
     By using 'angle_interval', the angle between the location and reference transform
@@ -100,7 +104,13 @@ def is_within_distance(target_transform, reference_transform, max_distance, angl
 
     fwd = reference_transform.get_forward_vector()
     forward_vector = np.array([fwd.x, fwd.y])
-    angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0)))
+    angle = math.degrees(
+        math.acos(
+            np.clip(
+                np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0
+            )
+        )
+    )
 
     return min_angle < angle < max_angle
 
@@ -113,11 +123,27 @@ def compute_magnitude_angle(target_location, current_location, orientation):
         :param orientation: orientation of the reference object
         :return: a tuple composed by the distance to the object and the angle between both objects
     """
-    target_vector = np.array([target_location.x - current_location.x, target_location.y - current_location.y])
+    target_vector = np.array(
+        [
+            target_location.x - current_location.x,
+            target_location.y - current_location.y,
+        ]
+    )
     norm_target = np.linalg.norm(target_vector)
 
-    forward_vector = np.array([math.cos(math.radians(orientation)), math.sin(math.radians(orientation))])
-    d_angle = math.degrees(math.acos(np.clip(np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0)))
+    forward_vector = np.array(
+        [
+            math.cos(math.radians(orientation)),
+            math.sin(math.radians(orientation)),
+        ]
+    )
+    d_angle = math.degrees(
+        math.acos(
+            np.clip(
+                np.dot(forward_vector, target_vector) / norm_target, -1.0, 1.0
+            )
+        )
+    )
 
     return (norm_target, d_angle)
 

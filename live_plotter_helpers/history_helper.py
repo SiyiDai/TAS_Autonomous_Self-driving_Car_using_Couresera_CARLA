@@ -5,7 +5,14 @@ def history_init(start_x, start_y, start_yaw):
     time_history = [0]
     speed_history = [0]
     collided_flag_history = [False]  # assume player starts off non-collided
-    history = [x_history, y_history, yaw_history, speed_history, time_history, collided_flag_history]
+    history = [
+        x_history,
+        y_history,
+        yaw_history,
+        speed_history,
+        time_history,
+        collided_flag_history,
+    ]
     return history
 
 

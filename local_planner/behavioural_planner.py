@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-# This work is licensed under the terms of the MIT license.
-# For a copy, see <https://opensource.org/licenses/MIT>.
-
-# Author: Ryan De Iaco
-# Additional Comments: Carlos Wang
-# Date: November 21, 2018
-
 import numpy as np
 import math
 
@@ -30,7 +23,9 @@ class BehaviouralPlanner:
         self._goal_state = [0.0, 0.0, 0.0]
         self._goal_index = 0
         self._stop_count = 0
-        self._stopsign_idx = 0  # Avoid stop for the same stopsign more than once
+        self._stopsign_idx = (
+            0  # Avoid stop for the same stopsign more than once
+        )
 
     def set_lookahead(self, lookahead):
         self._lookahead = lookahead
@@ -106,17 +101,21 @@ class BehaviouralPlanner:
             # along the waypoints.
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
-            goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
+            goal_index = self.get_goal_index(
+                waypoints, ego_state, closest_len, closest_index
+            )
             # ------------------------------------------------------------------
 
             # Finally, check the index set between closest_index and goal_index
             # for stop signs, and compute the goal state accordingly.
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINESs
             # ------------------------------------------------------------------
-            goal_index, stop_sign_found = self.check_for_stop_signs(waypoints, closest_index, goal_index)
+            goal_index, stop_sign_found = self.check_for_stop_signs(
+                waypoints, closest_index, goal_index
+            )
             self._goal_index = goal_index
+            # goal_state = [x, y, v]
             self._goal_state = waypoints[self._goal_index]
-            # print("[INFO] stop sign found: ", stop_sign_found)
             # ------------------------------------------------------------------
 
             # If stop sign found, set the goal to zero speed, then transition to
@@ -124,8 +123,11 @@ class BehaviouralPlanner:
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
             if stop_sign_found:
-                print("Switch state to DECELERATE_TO_STOP")
+                print(
+                    "[INFO] Stop sign found! Switch state to DECELERATE_TO_STOP"
+                )
                 self._stopsign_idx = self._goal_index
+                # set the goal to zero speed
                 self._goal_state[2] = 0
                 self._state = DECELERATE_TO_STOP
             # ------------------------------------------------------------------
@@ -139,7 +141,7 @@ class BehaviouralPlanner:
             # ------------------------------------------------------------------
             if abs(closed_loop_speed) < STOP_THRESHOLD:
                 self._state = STAY_STOPPED
-                print("Switch state to STAY_STOPPED")
+                print("[INFO] Switch state to STAY_STOPPED")
             # ------------------------------------------------------------------
 
         # In this state, check to see if we have stayed stopped for at
@@ -151,35 +153,31 @@ class BehaviouralPlanner:
             # passed the stop sign, return to lane following.
             # You should use the get_closest_index(), get_goal_index(), and
             # check_for_stop_signs() helper functions.
-            print("[INFO] stop count: ", self._stop_count)
+            print("[INFO] Stop count: ", self._stop_count)
             if self._stop_count == STOP_COUNTS:
-                # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
-                # --------------------------------------------------------------
-                closest_len, closest_index = get_closest_index(waypoints, ego_state)
-                goal_index = self.get_goal_index(waypoints, ego_state, closest_len, closest_index)
-                # --------------------------------------------------------------
-
                 # We've stopped for the required amount of time, so the new goal
                 # index for the stop line is not relevant. Use the goal index
                 # that is the lookahead distance away.
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
-                # _, stop_sign_found = self.check_for_stop_signs(waypoints, closest_index, goal_index)
                 stop_sign_found = False
-                self._goal_index = goal_index
+
+                closest_len, closest_index = get_closest_index(
+                    waypoints, ego_state
+                )
+                self._goal_index = self.get_goal_index(
+                    waypoints, ego_state, closest_len, closest_index
+                )
                 self._goal_state = waypoints[self._goal_index]
-                # print("[INFO] IN STAY_STOPPED - goal_index: ", self._goal_index)
-                # print("[INFO] IN STAY_STOPPED - goal_state: ", self._goal_state)
                 # --------------------------------------------------------------
 
                 # If the stop sign is no longer along our path, we can now
                 # transition back to our lane following state.
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
-                if not stop_sign_found:
-                    print("Switch state to FOLLOW_LANE")
-                    self._state = FOLLOW_LANE
-                    self._stop_count = 0
+                print("[INFO] Stop sign passed! Switch state to FOLLOW_LANE")
+                self._state = FOLLOW_LANE
+                self._stop_count = 0
                 # --------------------------------------------------------------
 
             # Otherwise, continue counting.
@@ -256,8 +254,9 @@ class BehaviouralPlanner:
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
         while wp_index < len(waypoints) - 1:
-            delta_x = waypoints[wp_index + 1][0] - waypoints[wp_index][0]
-            delta_y = waypoints[wp_index + 1][1] - waypoints[wp_index][1]
+            # calculate the distance between ego and next waypoints
+            delta_x = waypoints[wp_index + 1][0] - ego_state[0]
+            delta_y = waypoints[wp_index + 1][1] - ego_state[1]
             arc_length += np.linalg.norm([delta_x, delta_y])
             wp_index += 1
 
@@ -367,23 +366,37 @@ class BehaviouralPlanner:
         if not self._follow_lead_vehicle:
             # Compute the angle between the normalized vector between the lead vehicle
             # and ego vehicle position with the ego vehicle's heading vector.
-            lead_car_delta_vector = [lead_car_position[0] - ego_state[0], lead_car_position[1] - ego_state[1]]
+            lead_car_delta_vector = [
+                lead_car_position[0] - ego_state[0],
+                lead_car_position[1] - ego_state[1],
+            ]
             lead_car_distance = np.linalg.norm(lead_car_delta_vector)
             # In this case, the car is too far away.
             if lead_car_distance > self._follow_lead_vehicle_lookahead:
                 return
 
-            lead_car_delta_vector = np.divide(lead_car_delta_vector, lead_car_distance)
-            ego_heading_vector = [math.cos(ego_state[2]), math.sin(ego_state[2])]
+            lead_car_delta_vector = np.divide(
+                lead_car_delta_vector, lead_car_distance
+            )
+            ego_heading_vector = [
+                math.cos(ego_state[2]),
+                math.sin(ego_state[2]),
+            ]
             # Check to see if the relative angle between the lead vehicle and the ego
             # vehicle lies within +/- 45 degrees of the ego vehicle's heading.
-            if np.dot(lead_car_delta_vector, ego_heading_vector) < (1 / math.sqrt(2)):
+            if np.dot(lead_car_delta_vector, ego_heading_vector) < (
+                1 / math.sqrt(2)
+            ):
                 return
 
             self._follow_lead_vehicle = True
+            print("[INFO] Follow lead vehicle, adjust forward speed!")
 
         else:
-            lead_car_delta_vector = [lead_car_position[0] - ego_state[0], lead_car_position[1] - ego_state[1]]
+            lead_car_delta_vector = [
+                lead_car_position[0] - ego_state[0],
+                lead_car_position[1] - ego_state[1],
+            ]
             lead_car_distance = np.linalg.norm(lead_car_delta_vector)
 
             # Add a 15m buffer to prevent oscillations for the distance check.
@@ -391,9 +404,16 @@ class BehaviouralPlanner:
                 return
             # Check to see if the lead vehicle is still within the ego vehicle's
             # frame of view.
-            lead_car_delta_vector = np.divide(lead_car_delta_vector, lead_car_distance)
-            ego_heading_vector = [math.cos(ego_state[2]), math.sin(ego_state[2])]
-            if np.dot(lead_car_delta_vector, ego_heading_vector) > (1 / math.sqrt(2)):
+            lead_car_delta_vector = np.divide(
+                lead_car_delta_vector, lead_car_distance
+            )
+            ego_heading_vector = [
+                math.cos(ego_state[2]),
+                math.sin(ego_state[2]),
+            ]
+            if np.dot(lead_car_delta_vector, ego_heading_vector) > (
+                1 / math.sqrt(2)
+            ):
                 return
 
             self._follow_lead_vehicle = False
@@ -447,6 +467,7 @@ def get_closest_index(waypoints, ego_state):
         y0 = ego_state[1]
         x1 = waypoints[i][0]
         y1 = waypoints[i][1]
+        # calculate the distance between ego and waypoints, update it with the closest one
         distance_to_wp = np.linalg.norm([x1 - x0, y1 - y0])
         if distance_to_wp <= closest_len:
             closest_len = distance_to_wp
