@@ -108,8 +108,8 @@ class BehaviouralPlanner:
             # ------------------------------------------------------------------
             goal_index, stop_sign_found = self.check_for_stop_signs(waypoints, closest_index, goal_index)
             self._goal_index = goal_index
+            # goal_state = [x, y, v]
             self._goal_state = waypoints[self._goal_index]
-            # print("[INFO] stop sign found: ", stop_sign_found)
             # ------------------------------------------------------------------
 
             # If stop sign found, set the goal to zero speed, then transition to
@@ -117,8 +117,9 @@ class BehaviouralPlanner:
             # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
             # ------------------------------------------------------------------
             if stop_sign_found:
-                print("Switch state to DECELERATE_TO_STOP")
+                print("[INFO] Stop sign found! Switch state to DECELERATE_TO_STOP")
                 self._stopsign_idx = self._goal_index
+                # set the goal to zero speed
                 self._goal_state[2] = 0
                 self._state = DECELERATE_TO_STOP
             # ------------------------------------------------------------------
@@ -132,7 +133,7 @@ class BehaviouralPlanner:
             # ------------------------------------------------------------------
             if abs(closed_loop_speed) < STOP_THRESHOLD:
                 self._state = STAY_STOPPED
-                print("Switch state to STAY_STOPPED")
+                print("[INFO] Switch state to STAY_STOPPED")
             # ------------------------------------------------------------------
 
         # In this state, check to see if we have stayed stopped for at
@@ -170,7 +171,7 @@ class BehaviouralPlanner:
                 # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
                 # --------------------------------------------------------------
                 if not stop_sign_found:
-                    print("Switch state to FOLLOW_LANE")
+                    print("[INFO] Stop sign passed! Switch state to FOLLOW_LANE")
                     self._state = FOLLOW_LANE
                     self._stop_count = 0
                 # --------------------------------------------------------------
@@ -249,7 +250,7 @@ class BehaviouralPlanner:
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
         while wp_index < len(waypoints) - 1:
-            # calculate the distance between  
+            # calculate the distance between ego and next waypoints
             delta_x = waypoints[wp_index + 1][0] - ego_state[0]
             delta_y = waypoints[wp_index + 1][1] - ego_state[1]
             arc_length += np.linalg.norm([delta_x, delta_y])
@@ -375,6 +376,7 @@ class BehaviouralPlanner:
                 return
 
             self._follow_lead_vehicle = True
+            print("[INFO] Follow lead vehicle, adjust forward speed!")
 
         else:
             lead_car_delta_vector = [lead_car_position[0] - ego_state[0], lead_car_position[1] - ego_state[1]]
@@ -391,7 +393,6 @@ class BehaviouralPlanner:
                 return
 
             self._follow_lead_vehicle = False
-
 
 ######################################################
 ######################################################
