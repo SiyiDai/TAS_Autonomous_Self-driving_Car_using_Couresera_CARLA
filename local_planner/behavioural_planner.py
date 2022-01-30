@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
 
-# This work is licensed under the terms of the MIT license.
-# For a copy, see <https://opensource.org/licenses/MIT>.
-
-# Author: Ryan De Iaco
-# Additional Comments: Carlos Wang
-# Date: November 21, 2018
-
 import numpy as np
 import math
 
@@ -256,8 +249,9 @@ class BehaviouralPlanner:
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
         while wp_index < len(waypoints) - 1:
-            delta_x = waypoints[wp_index + 1][0] - waypoints[wp_index][0]
-            delta_y = waypoints[wp_index + 1][1] - waypoints[wp_index][1]
+            # calculate the distance between  
+            delta_x = waypoints[wp_index + 1][0] - ego_state[0]
+            delta_y = waypoints[wp_index + 1][1] - ego_state[1]
             arc_length += np.linalg.norm([delta_x, delta_y])
             wp_index += 1
 
@@ -447,6 +441,7 @@ def get_closest_index(waypoints, ego_state):
         y0 = ego_state[1]
         x1 = waypoints[i][0]
         y1 = waypoints[i][1]
+        # calculate the distance between ego and waypoints, update it with the closest one
         distance_to_wp = np.linalg.norm([x1 - x0, y1 - y0])
         if distance_to_wp <= closest_len:
             closest_len = distance_to_wp
