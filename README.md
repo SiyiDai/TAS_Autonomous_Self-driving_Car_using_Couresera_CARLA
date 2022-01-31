@@ -1,24 +1,5 @@
 # Group_6
 
-# Method of running our project
-Following is the method to run Carla simulator and our algorithm. (NOTE: please run on python version 3.5 or 3.6.)
-
-Run following commands in terminal: 
-
-#### For Ubuntu system: 
-
-./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
-
-python3 main.py     # (in the root folder of scripts)
-
-#### For Windows system: 
-
-CarlaUE4.exe /Game/Maps/Course4 -windowed -carla-server -benchmark -fps=30
-
-python module_7.py
-
-#### Note that there are difficulties running Carla with a virtual machine. 
-
 
 # Modules Definitions
 
@@ -33,17 +14,6 @@ python module_7.py
 
 **The below models are supposed use information of Global_planner waypoints and Object decetion waypoints.**
 
-**Velocity_Planner** : 
-
-**local_planner** : 
-
-**controller2** : 
-
-**behevioural_planner** : 
-
-**path_optimiizer** : 
-
-**collision_checker** : 
 
 
 
@@ -72,15 +42,6 @@ https://carla.readthedocs.io/en/0.9.2/python_api_tutorial/#vehicles
 4. Global Planning- Local Planning- behavior planning  -Motion Planning
 
 
-# What we have achieved/ tried to do: 
-
-1. We followed courses "Introduction to Self-Driving Cars" and "Motion Planning for Self-Driving Cars" on Coursera to learn about self-driving cars and complete "TODO" tasks in local_planner/local_planner.py, local_planner/behavioural_planner.py and collision_check/collision_checker.py. 
-
-2. semantic segmentation (used semantic segmentation to distinguish different obstacles --> vehicles, pedestrians, find the centroid of the obstacles as representation of their position)
-
-3. global planner (extracted waypoints and used A* to find the shortest path)
-
-4. 
 
 
 
