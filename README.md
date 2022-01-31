@@ -5,19 +5,19 @@ Following is the method to run Carla simulator and our algorithm. (NOTE: please 
 
 Run following commands in terminal: 
 
-## For Ubuntu system: 
+#### For Ubuntu system: 
 
 ./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
 
 python3 main.py     # (in the root folder of scripts)
 
-## For Windows system: 
+#### For Windows system: 
 
 CarlaUE4.exe /Game/Maps/Course4 -windowed -carla-server -benchmark -fps=30
 
 python module_7.py
 
-## Note that there are difficulties running Carla with a virtual machine. 
+#### Note that there are difficulties running Carla with a virtual machine. 
 
 
 # Modules Definitions
