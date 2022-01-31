@@ -36,7 +36,9 @@ def trajectory_fig_local_path_update(
         # If a path was invalid in the set, there is no path to plot.
         if path_validity[i]:
             # Colour paths according to collision checking.
+            obstacle_flag = False
             if not collision_check_array[path_counter]:
+                obstacle_flag = True
                 colour = "r"
             elif i == best_index:
                 colour = "k"
@@ -51,6 +53,16 @@ def trajectory_fig_local_path_update(
             path_counter += 1
         else:
             trajectory_fig.update("local_path " + str(i), [ego_state[0]], [ego_state[1]], "r")
+    obstacle_avoidance_indicate(best_index, obstacle_flag)
+
+
+def obstacle_avoidance_indicate(best_index, obstacle_flag):
+    if best_index != None:
+        if obstacle_flag == True:
+            print("[INFO] Possible obstacle detected, collision check!")
+            print("[INFO] Choose best path: index", best_index)
+    else:
+        print("[INFO] Pass the obstacle successfully!")
 
 
 def trajectory_fig_set_all(
