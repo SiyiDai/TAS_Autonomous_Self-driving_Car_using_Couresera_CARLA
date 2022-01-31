@@ -1,8 +1,10 @@
 # Group_6
 
 # Method of running our project
-Following is the method to run Carla simulator and our algorithm.(NOTE: please run on python version 3.5 or 3.6.)
+Following is the method to run Carla simulator and our algorithm. (NOTE: please run on python version 3.5 or 3.6.)
+
 Run following commands in terminal: 
+
 1.   ./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
 2.   python3 main.py     # (in the root folder of scripts)
 
