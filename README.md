@@ -6,6 +6,7 @@ Following is the method to run Carla simulator and our algorithm. (NOTE: please 
 Run following commands in terminal: 
 
 ./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
+
 python3 main.py     # (in the root folder of scripts)
 
 # Modules Definitions
@@ -15,23 +16,23 @@ python3 main.py     # (in the root folder of scripts)
 **Global_Planner** : not implemented
   It finds sortestpath using Map of Carla simulation enviroment and outputs waypoints for agent from starting point to end point in the map... (Which should be defined in code not)
 
-**Object_Detection** : not implemented
+**Object_Detection** : 
  It produces waypoints of the current obstacle(cars pedesterians)
 
 
 **The below models are supposed use information of Global_planner waypoints and Object decetion waypoints.**
 
-**Velocity_Planner** : not  integrated, found some algorithm and code but not integrated.
+**Velocity_Planner** : 
 
-**local_planner** : not integrated, found some algorithm and code but not integrated.
+**local_planner** : 
 
-**controller2** : not integrated , found some algorithm and code but not integrated.
+**controller2** : 
 
-**behevioural_planner** : not integrated , found some algorithm and code but not integrated.
+**behevioural_planner** : 
 
-**path_optimiizer** : not integrated , found some algorithm and code but not integrated.
+**path_optimiizer** : 
 
-**collision_checker** : not integrated, found some algorithm and code but not integrated.
+**collision_checker** : 
 
 
 
@@ -48,17 +49,17 @@ https://www.coursera.org/learn/intro-self-driving-cars/home/welcome
 
 # Project Modules:
 
-1. System modelling and controller desing -- Unnecessary for our project--
-2. Vehicle localization using sensor fusion(Inertial measurement unit- GPNS/GNSS - Car modelling) / or it might be also possible that finding exact location using  carla... -- Unnecessary for our project--
+1. System modelling and controller desing 
+2. Vehicle localization using sensor fusion(Inertial measurement unit- GPNS/GNSS - Car modelling) / or it might be also possible that finding exact location using  carla... -
 -- link for locating vehicle and motion model:
 https://carla.readthedocs.io/en/0.9.2/python_api_tutorial/#vehicles
--- Unnecessary for our project--
+
 
 3. Computer vision part (Segmented segmentation- Finding driveable area)
   -- Helpfull link for computer vision --> https://carla.readthedocs.io/en/0.9.2/cameras_and_sensors/#sensorcamerasemantic_segmentation
--- Unnecessary for our project--
+
 4. Global Planning- Local Planning- behavior planning  -Motion Planning
--- Unnecessary for our project-- ### ?
+
 
 # What we have achieved/ tried to do: 
 
