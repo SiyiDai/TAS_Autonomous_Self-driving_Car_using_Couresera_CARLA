@@ -57,12 +57,8 @@ class LocalPlanner:
         self._num_paths = num_paths
         self._path_offset = path_offset
         self._path_optimizer = path_optimizer.PathOptimizer()
-        self._collision_checker = collision_checker.CollisionChecker(
-            circle_offsets, circle_radii, path_select_weight
-        )
-        self._velocity_planner = velocity_planner.VelocityPlanner(
-            time_gap, a_max, slow_speed, stop_line_buffer
-        )
+        self._collision_checker = collision_checker.CollisionChecker(circle_offsets, circle_radii, path_select_weight)
+        self._velocity_planner = velocity_planner.VelocityPlanner(time_gap, a_max, slow_speed, stop_line_buffer)
 
     # Computes the goal state set from a given goal position. This is done by
     # laterally sampling offsets from the goal location along the direction
@@ -145,12 +141,8 @@ class LocalPlanner:
         # current yaw corresponds to theta = 0 in the new local frame.
         # TODO: INSERT YOUR CODE BETWEEN THE DASHED LINES
         # ------------------------------------------------------------------
-        goal_x = goal_state_local[0] * cos(-ego_state[2]) - goal_state_local[
-            1
-        ] * sin(-ego_state[2])
-        goal_y = goal_state_local[0] * sin(-ego_state[2]) + goal_state_local[
-            1
-        ] * cos(-ego_state[2])
+        goal_x = goal_state_local[0] * cos(-ego_state[2]) - goal_state_local[1] * sin(-ego_state[2])
+        goal_y = goal_state_local[0] * sin(-ego_state[2]) + goal_state_local[1] * cos(-ego_state[2])
         # ------------------------------------------------------------------
 
         # Compute the goal yaw in the local frame by subtracting off the
@@ -189,9 +181,7 @@ class LocalPlanner:
             y_offset = offset * sin(goal_t + pi / 2)
             # ------------------------------------------------------------------
 
-            goal_state_set.append(
-                [goal_x + x_offset, goal_y + y_offset, goal_t, goal_v]
-            )
+            goal_state_set.append([goal_x + x_offset, goal_y + y_offset, goal_t, goal_v])
 
         return goal_state_set
 
@@ -234,9 +224,7 @@ class LocalPlanner:
         paths = []
         path_validity = []
         for goal_state in goal_state_set:
-            path = self._path_optimizer.optimize_spiral(
-                goal_state[0], goal_state[1], goal_state[2]
-            )
+            path = self._path_optimizer.optimize_spiral(goal_state[0], goal_state[1], goal_state[2])
             if (
                 np.linalg.norm(
                     [
@@ -293,16 +281,8 @@ def transform_paths(paths, ego_state):
         t_transformed = []
 
         for i in range(len(path[0])):
-            x_transformed.append(
-                ego_state[0]
-                + path[0][i] * cos(ego_state[2])
-                - path[1][i] * sin(ego_state[2])
-            )
-            y_transformed.append(
-                ego_state[1]
-                + path[0][i] * sin(ego_state[2])
-                + path[1][i] * cos(ego_state[2])
-            )
+            x_transformed.append(ego_state[0] + path[0][i] * cos(ego_state[2]) - path[1][i] * sin(ego_state[2]))
+            y_transformed.append(ego_state[1] + path[0][i] * sin(ego_state[2]) + path[1][i] * cos(ego_state[2]))
             t_transformed.append(path[2][i] + ego_state[2])
 
         transformed_paths.append([x_transformed, y_transformed, t_transformed])

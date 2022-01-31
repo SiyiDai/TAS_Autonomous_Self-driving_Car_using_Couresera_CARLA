@@ -9,14 +9,10 @@ sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 from carla.client import VehicleControl
 
 # controller output directory
-CONTROLLER_OUTPUT_FOLDER = (
-    os.path.dirname(os.path.realpath(__file__)) + "/controller_output/"
-)
+CONTROLLER_OUTPUT_FOLDER = os.path.dirname(os.path.realpath(__file__)) + "/controller_output/"
 
 
-def send_control_command(
-    client, throttle, steer, brake, hand_brake=False, reverse=False
-):
+def send_control_command(client, throttle, steer, brake, hand_brake=False, reverse=False):
     """Send control command to CARLA client.
 
     Send control command to CARLA client.
@@ -48,9 +44,7 @@ def create_controller_output_dir(output_folder):
         os.makedirs(output_folder)
 
 
-def store_trajectory_plot_all(
-    trajectory_fig, forward_speed_fig, throttle_fig, brake_fig, steer_fig
-):
+def store_trajectory_plot_all(trajectory_fig, forward_speed_fig, throttle_fig, brake_fig, steer_fig):
     store_trajectory_plot(trajectory_fig.fig, "trajectory.png")
     store_trajectory_plot(forward_speed_fig.fig, "forward_speed.png")
     store_trajectory_plot(throttle_fig.fig, "throttle_output.png")
@@ -78,8 +72,7 @@ def write_trajectory_file(history):
     with open(file_name, "w") as trajectory_file:
         for i in range(len(x_list)):
             trajectory_file.write(
-                "%3.3f, %3.3f, %2.3f, %6.3f %r\n"
-                % (x_list[i], y_list[i], v_list[i], t_list[i], collided_list[i])
+                "%3.3f, %3.3f, %2.3f, %6.3f %r\n" % (x_list[i], y_list[i], v_list[i], t_list[i], collided_list[i])
             )
 
 

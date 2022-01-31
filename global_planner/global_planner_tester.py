@@ -79,9 +79,7 @@ def main(args):
         source_ori = 0, 0
         node_target = 92.34, 86.73282105965863
         target_ori = 0, 0
-        route = citytrack.compute_route(
-            node_source, source_ori, node_target, target_ori
-        )
+        route = citytrack.compute_route(node_source, source_ori, node_target, target_ori)
         # route_trace = grp.trace_route(origin, destination)
         # print(route_trace)
 
@@ -117,9 +115,7 @@ if __name__ == "__main__":
             type=int,
             help="TCP port to listen to (default: 2000)",
         )
-        argparser.add_argument(
-            "-a", "--autopilot", action="store_true", help="enable autopilot"
-        )
+        argparser.add_argument("-a", "--autopilot", action="store_true", help="enable autopilot")
         argparser.add_argument(
             "-q",
             "--quality-level",

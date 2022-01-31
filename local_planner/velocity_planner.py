@@ -38,11 +38,7 @@ class VelocityPlanner:
                     self._prev_trajectory[i][0:2],
                 )
             )
-            velocity = (
-                0.001
-                if self._prev_trajectory[i][2] == 0
-                else self._prev_trajectory[i][2]
-            )
+            velocity = 0.001 if self._prev_trajectory[i][2] == 0 else self._prev_trajectory[i][2]
             time_delta = distance_step / velocity
 
             # If time_delta exceeds the remaining time in our simulation timestep,
@@ -149,9 +145,7 @@ class VelocityPlanner:
         # If we need to follow the lead vehicle, make sure we decelerate to its
         # speed by the time we reach the time gap point.
         elif follow_lead_vehicle:
-            profile = self.follow_profile(
-                path, start_speed, desired_speed, lead_car_state
-            )
+            profile = self.follow_profile(path, start_speed, desired_speed, lead_car_state)
 
         # Otherwise, compute the profile to reach our desired speed.
         else:
@@ -224,9 +218,7 @@ class VelocityPlanner:
         # compute total path length
         path_length = 0.0
         for i in range(len(path[0]) - 1):
-            path_length += np.linalg.norm(
-                [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-            )
+            path_length += np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
 
         stop_index = len(path[0]) - 1
         temp_dist = 0.0
@@ -253,9 +245,7 @@ class VelocityPlanner:
             # The rest of the speeds should be a linear ramp from zero,
             # decelerating at -self._a_max.
             for i in reversed(range(stop_index)):
-                dist = np.linalg.norm(
-                    [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-                )
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vi = calc_final_speed(vf, -self._a_max, dist)
                 # We don't want to have points above the starting speed
                 # along our profile, so clamp to start_speed.
@@ -307,9 +297,7 @@ class VelocityPlanner:
             # -self._a_max.
             vi = start_speed
             for i in range(decel_index):
-                dist = np.linalg.norm(
-                    [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-                )
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 # We don't want to overshoot our slow_speed, so clamp it to that.
                 if vf < slow_speed:
@@ -326,9 +314,7 @@ class VelocityPlanner:
             # linear ramp from the slow_speed down to the 0, decelerating at
             # -self._a_max.
             for i in range(brake_index, stop_index):
-                dist = np.linalg.norm(
-                    [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-                )
+                dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 profile.append([path[0][i], path[1][i], vi])
                 vi = vf
@@ -384,9 +370,7 @@ class VelocityPlanner:
         min_index = len(path[0]) - 1
         min_dist = float("Inf")
         for i in range(len(path)):
-            dist = np.linalg.norm(
-                [path[0][i] - lead_car_state[0], path[1][i] - lead_car_state[1]]
-            )
+            dist = np.linalg.norm([path[0][i] - lead_car_state[0], path[1][i] - lead_car_state[1]])
             if dist < min_dist:
                 min_dist = dist
                 min_index = i
@@ -411,21 +395,15 @@ class VelocityPlanner:
         # time gap point, ramp_end_index, which therefore is the end of our ramp
         # velocity profile.
         if desired_speed < start_speed:
-            decel_distance = calc_distance(
-                start_speed, desired_speed, -self._a_max
-            )
+            decel_distance = calc_distance(start_speed, desired_speed, -self._a_max)
         else:
-            decel_distance = calc_distance(
-                start_speed, desired_speed, self._a_max
-            )
+            decel_distance = calc_distance(start_speed, desired_speed, self._a_max)
 
         # Here we will compute the speed profile from our initial speed to the
         # end of the ramp.
         vi = start_speed
         for i in range(ramp_end_index + 1):
-            dist = np.linalg.norm(
-                [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-            )
+            dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
             if desired_speed < start_speed:
                 vf = calc_final_speed(vi, -self._a_max, dist)
             else:
@@ -478,21 +456,15 @@ class VelocityPlanner:
         # Compute distance travelled from start speed to desired speed using
         # a constant acceleration.
         if desired_speed < start_speed:
-            accel_distance = calc_distance(
-                start_speed, desired_speed, -self._a_max
-            )
+            accel_distance = calc_distance(start_speed, desired_speed, -self._a_max)
         else:
-            accel_distance = calc_distance(
-                start_speed, desired_speed, self._a_max
-            )
+            accel_distance = calc_distance(start_speed, desired_speed, self._a_max)
 
         # Here we will compute the end of the ramp for our velocity profile.
         # At the end of the ramp, we will maintain our final speed.
         ramp_end_index = 0
         distance = 0.0
-        while (ramp_end_index < len(path[0]) - 1) and (
-            distance < accel_distance
-        ):
+        while (ramp_end_index < len(path[0]) - 1) and (distance < accel_distance):
             distance += np.linalg.norm(
                 [
                     path[0][ramp_end_index + 1] - path[0][ramp_end_index],
@@ -504,9 +476,7 @@ class VelocityPlanner:
         # Here we will actually compute the velocities along the ramp.
         vi = start_speed
         for i in range(ramp_end_index):
-            dist = np.linalg.norm(
-                [path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]]
-            )
+            dist = np.linalg.norm([path[0][i + 1] - path[0][i], path[1][i + 1] - path[1][i]])
             if desired_speed < start_speed:
                 vf = calc_final_speed(vi, -self._a_max, dist)
                 # clamp speed to desired speed

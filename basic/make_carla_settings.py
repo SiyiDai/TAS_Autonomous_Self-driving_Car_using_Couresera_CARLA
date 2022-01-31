@@ -3,6 +3,12 @@ import os
 
 sys.path.append(os.path.abspath(sys.path[0] + "/.."))
 from carla.settings import CarlaSettings
+from carla import sensor
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+MINI_WINDOW_WIDTH = 320
+MINI_WINDOW_HEIGHT = 180
 
 NUM_PEDESTRIANS = 0  # total number of pedestrians to spawn 0
 NUM_VEHICLES = 2  # total number of vehicles to spawn 2
@@ -40,6 +46,10 @@ def make_carla_settings(args):
     if NUM_PEDESTRIANS > 0 or NUM_VEHICLES > 0:
         get_non_player_agents_info = True
 
+    # set cameras for object detection
+    set_depth_camera(sensor, settings)
+    set_semseg_camera(sensor, settings)
+
     # Base level settings
     settings.set(
         SynchronousMode=True,
@@ -52,3 +62,27 @@ def make_carla_settings(args):
         QualityLevel=args.quality_level,
     )
     return settings
+
+
+def set_camera(sensor, settings):
+    RGB_camera = sensor.Camera("CameraRGB")
+    RGB_camera.set_image_size(WINDOW_WIDTH, WINDOW_HEIGHT)
+    RGB_camera.set_position(2.0, 0.0, 1.4)
+    RGB_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(RGB_camera)
+
+
+def set_depth_camera(sensor, settings):
+    depth_camera = sensor.Camera("CameraDepth", PostProcessing="Depth")
+    depth_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    depth_camera.set_position(2.0, 0.0, 1.4)
+    depth_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(depth_camera)
+
+
+def set_semseg_camera(sensor, settings):
+    semseg_camera = sensor.Camera("CameraSemSeg", PostProcessing="SemanticSegmentation")
+    semseg_camera.set_image_size(MINI_WINDOW_WIDTH, MINI_WINDOW_HEIGHT)
+    semseg_camera.set_position(2.0, 0.0, 1.4)
+    semseg_camera.set_rotation(0.0, 0.0, 0.0)
+    settings.add_sensor(semseg_camera)

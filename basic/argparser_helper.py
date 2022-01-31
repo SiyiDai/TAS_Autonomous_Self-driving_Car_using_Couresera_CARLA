@@ -30,9 +30,7 @@ def argparser_add_argument(argparser):
         type=int,
         help="TCP port to listen to (default: 2000)",
     )
-    argparser.add_argument(
-        "-a", "--autopilot", action="store_true", help="enable autopilot"
-    )
+    argparser.add_argument("-a", "--autopilot", action="store_true", help="enable autopilot")
     argparser.add_argument(
         "-q",
         "--quality-level",
