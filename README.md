@@ -5,8 +5,8 @@ Following is the method to run Carla simulator and our algorithm. (NOTE: please 
 
 Run following commands in terminal: 
 
-1.   ./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
-2.   python3 main.py     # (in the root folder of scripts)
+./CarlaUE4.sh -windowed -carla-server    # (in the root folder of Carla)
+python3 main.py     # (in the root folder of scripts)
 
 # Modules Definitions
 
