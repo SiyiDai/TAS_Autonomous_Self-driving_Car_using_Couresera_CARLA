@@ -17,11 +17,13 @@ def load_objects(stopsign_file, stopsign_fencelength, parkedcar_file):
     parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
     return stopsign_fences, parkedcar_box_pts
 
+
 def load_stopsign_from_file(stopsign_file, stopsign_fencelength):
     # load stopsign
     stopsign_data = load_stopsign(stopsign_file)
     stopsign_fences = convert_stopsign_lp(stopsign_data, stopsign_fencelength)
     return stopsign_fences
+
 
 def load_waypoints(waypoints_file):
     # Load Waypoints

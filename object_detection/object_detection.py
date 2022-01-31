@@ -76,7 +76,7 @@ def obejct_position_world(object_cen, point_cloud, ego_x, ego_y):
         object_x_car = -point_cloud[2, int(location)]
         object_y_car = point_cloud[1, int(location)]
         object_x_world = object_x_car + ego_x - CAMERA_MOUNTING_SHIFT_X
-        object_y_world = object_y_car + ego_y- CAMERA_MOUNTING_SHIFT_Y
+        object_y_world = object_y_car + ego_y - CAMERA_MOUNTING_SHIFT_Y
         object_x.append(object_x_world)
         object_y.append(object_y_world)
         # object_z.append(point_cloud[2, int(location)])
