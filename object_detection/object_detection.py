@@ -10,31 +10,35 @@ from carla import image_converter
 HORIZONTAL_LEVEL = 38.10
 PEDESTRIAN_SEG_RANGE = [220, 20, 60]
 VEHICLE_SEG_RANGE = [0, 0, 255]
+CAMERA_MOUNTING_SHIFT_X = 4.2
+CAMERA_MOUNTING_SHIFT_Y = 0.14
 
 IMAGE_WIDTH = 180
 IMAGE_HEIGHT = 320
 YAW_ANGLE = 180
 
 VEHICLE_BOX_X_RADIUS = 2.5
-VEHICLE_BOX_Y_RADIUS = 1
-VEHICLE_BOX_Z_RADIUS = 1
+VEHICLE_BOX_Y_RADIUS = 1.0
+VEHICLE_BOX_Z_RADIUS = 0.8
 
 PEDESTRIAN_BOX_X_RADIUS = 1
 PEDESTRIAN_BOX_Y_RADIUS = 1
 PEDESTRIAN_BOX_Z_RADIUS = 2
 
 
-def object_detection(image_depth, image_segment, x, y):
+def object_detection(image_depth, image_segment, ego_x, ego_y):
 
     point_cloud = depth_to_pointcloud(image_depth)
     segmented_image = image_converter.labels_to_cityscapes_palette(image_segment)
 
     # if segmented_image == VEHICLE_SEG_RANGE:
     vehicle_3d = segmented_image == VEHICLE_SEG_RANGE
-    vehicle_cen = object_center_detection(vehicle_3d)
-    vehicle_x, vehicle_y = obejct_position(vehicle_cen, point_cloud, x, y)
+    vehicle_cen_car = object_center_detection(vehicle_3d)
+    vehicle_x, vehicle_y = obejct_position_world(vehicle_cen_car, point_cloud, ego_x, ego_y)
+    vehicle_pos = [vehicle_x[0], vehicle_y[0], HORIZONTAL_LEVEL]
+    print("[INFO] Parked car detected at world map: ", vehicle_pos)
     # print(vehicle_x, vehicle_y)
-    write_vehicle_detection_to_txt(vehicle_x, vehicle_y)
+    data = write_vehicle_detection_to_txt(vehicle_x, vehicle_y)
     # elif segmented_image == PEDESTRIAN_SEG_RANGE:
     #     pedestrian_3d = segmented_image
     #     pedestrian_cen = object_center_detection(pedestrian_3d)
@@ -44,6 +48,8 @@ def object_detection(image_depth, image_segment, x, y):
     #     write_pedestrian_detection_to_txt(
     #         pedestrian_x, pedestrian_y, pedestrian_z
     #     )
+    # print(data)
+    return data
 
 
 def object_center_detection(object_3d):
@@ -59,19 +65,21 @@ def object_center_detection(object_3d):
     return object_cen
 
 
-def obejct_position(object_cen, point_cloud, x, y):
+def obejct_position_world(object_cen, point_cloud, ego_x, ego_y):
+    # transformation from ego coordinate to world coordinate
     object_x = []
     object_y = []
     # object_z = []
 
     for i in object_cen:
         location = i[1] + i[0] * IMAGE_HEIGHT
-        object_x.append(point_cloud[0, int(location)] + x)
-        object_y.append(point_cloud[1, int(location)] + y)
+        object_x_car = -point_cloud[2, int(location)]
+        object_y_car = point_cloud[1, int(location)]
+        object_x_world = object_x_car + ego_x - CAMERA_MOUNTING_SHIFT_X
+        object_y_world = object_y_car + ego_y- CAMERA_MOUNTING_SHIFT_Y
+        object_x.append(object_x_world)
+        object_y.append(object_y_world)
         # object_z.append(point_cloud[2, int(location)])
-
-    # print("x cord:" + str(object_x))
-    # print("y cord:" + str(object_y))
 
     return object_x, object_y
 
@@ -91,7 +99,7 @@ def write_vehicle_detection_to_txt(objectsx, objectsy):
         writer.writerow(header)
         for i in range(0, len(objectsx)):
             locations = []
-            vehicle_position = [objectsx[i], objectsy[i], HORIZONTAL_LEVEL, YAW_ANGLE]
+            vehicle_position = [objectsx[i], objectsy[i], HORIZONTAL_LEVEL, np.radians(YAW_ANGLE)]
             vehicle_size = [
                 VEHICLE_BOX_X_RADIUS,
                 VEHICLE_BOX_Y_RADIUS,
@@ -99,9 +107,10 @@ def write_vehicle_detection_to_txt(objectsx, objectsy):
             ]
             locations = vehicle_position + vehicle_size
             writer.writerow(locations)
+    return locations
 
 
-def write_pedestrian_detection_to_txt(objectsx, objectsy, objectsz):
+def write_pedestrian_detection_to_txt(objectsx, objectsy):
     header = [
         "X(m)",
         "Y(m)",

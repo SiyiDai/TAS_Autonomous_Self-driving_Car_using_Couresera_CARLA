@@ -73,10 +73,14 @@ def exec_waypoint_nav_demo(args):
         live_plot_timer = Timer(live_plot_period)
 
         # load objects
-        stopsign_fences, parkedcar_box_pts = load_objects(
+        # stopsign_fences, parkedcar_box_pts = load_objects(
+        #     stopsign_file=C4_STOP_SIGN_FILE,
+        #     stopsign_fencelength=C4_STOP_SIGN_FENCELENGTH,
+        #     parkedcar_file=C4_PARKED_CAR_FILE,
+        # )
+        stopsign_fences = load_stopsign_from_file(
             stopsign_file=C4_STOP_SIGN_FILE,
             stopsign_fencelength=C4_STOP_SIGN_FENCELENGTH,
-            parkedcar_file=C4_PARKED_CAR_FILE,
         )
 
         # load global planner waypoints
@@ -121,7 +125,10 @@ def exec_waypoint_nav_demo(args):
 
         if camera_depth_image is not None:
             if camera_semseg_image is not None:
-                object_detection(camera_depth_image, camera_semseg_image, start_x, start_y)
+                parkedcar_data = object_detection(camera_depth_image, camera_semseg_image, start_x, start_y)
+
+        # calculate the parkedcar bbox points base on detection
+        parkedcar_box_pts = obtain_parkedcar_lp([parkedcar_data])
 
         send_control_command(client, throttle=0.0, steer=0, brake=1.0)
 
