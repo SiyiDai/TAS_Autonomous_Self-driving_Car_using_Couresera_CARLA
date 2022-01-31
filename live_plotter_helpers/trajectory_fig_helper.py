@@ -123,6 +123,7 @@ def trajectory_fig_add_parked_car_points(trajectory_fig, parkedcar_box_pts):
         x0=parkedcar_box_pts_np[:, 0],
         y0=parkedcar_box_pts_np[:, 1],
         linestyle="",
+        markertext="Detected Parked Car",
         marker="+",
         color="b",
     )
