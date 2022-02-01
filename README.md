@@ -21,7 +21,7 @@
 
 Here you can find the compressed package of Carla Simulator for Ubuntu and Windows: 
 
-https://drive.google.com/drive/folders/14t-zNeNv2UtZi0UqcREMhMZ889Z12xjc?usp=sharing
+[Download link for Carla Simulator](https://drive.google.com/drive/folders/14t-zNeNv2UtZi0UqcREMhMZ889Z12xjc?usp=sharing)
 
 
 #### 2. Install Dependencies
@@ -83,11 +83,7 @@ Firstly, our computers were not able to run last version of carla because of its
 ****
 ## Description:
 
-Aim of our project is establishg one autonosmous self driving car application using Local Planner, Computer Vision, Global Planner, Behaviour Planner knowledge in Carla enviroment. --> 
-
-[project_proposal.pdf](Carla_Setup_Guide/Project_Proposal_ Global_and_Local_Motion_Planning_for_Self_driving_Car_using_Carla_Simulator.pdf)
-
-
+Aim of our project is establishg one autonosmous self driving car application using Local Planner, Computer Vision, Global Planner, Behaviour Planner knowledge in Carla enviroment. 
 
 ## Overall Process of Our Project
 
@@ -112,6 +108,7 @@ We also managed to implement a global planner, which can read map information fr
     - Controller Part
     - Car modeling
     - Localization part
+
 - Completed tasks:
     - Perception Part
     - Global Planner
@@ -119,6 +116,7 @@ We also managed to implement a global planner, which can read map information fr
     - Behaviour Planner
     - Controller Part
     - Car modeling
+
 - Results:
     - Perception Part (worked)
     - Global Planner (worked)
@@ -126,8 +124,8 @@ We also managed to implement a global planner, which can read map information fr
     - Behaviour Planner (worked)
     - Controlller Part (worked)
     - Car Modeling (It is decided that using car modeling uncessarary for our project, we tuned pid experimentally and our research in internet. )
-    - Localization part(found uncessarary)
-    - Integration of all modules (failed)
+    - Localization part (found uncessarary)
+    - Integration of global planner to the project (failed)
 
 #### As the basic structure of our project was taken from the Coursera course, we believe we need to point out which scripts we have contributed to: 
 
@@ -137,9 +135,13 @@ We also managed to implement a global planner, which can read map information fr
 
 **Global Planner:** `/global_planner/misc.py`, `/global_planner/shortest_path_test.py`. 
 
-**Local Planner:** `/local_planner/local_planner.py`. 
+**Local Planner:** `/local_planner/local_planner.py`. `/local_planner/path_optimizer.py`, `/local_planner/velocity_planner.py`
 
-**Behaviour Planner:** `/behavioural_planner/behavioural_planner.py`, `/collision_check/collision_checker.py`. 
+**Behaviour Planner:** `/behavioural_planner/behavioural_planner.py`
+
+**Collision Check:** `/collision_check/collison_checker.py`, `/collision_check/get_player_collided_flag.py`
+
+**Basic and Live Plotter Helper are rewritten from the foundation of couresera structure**
 
 
 
