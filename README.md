@@ -91,15 +91,17 @@ We also managed to implement a global planner, which can read map information fr
     - Localization part(found uncessarary)
     - Integration of all modules (failed)
 
-#### As the basic structure of our project was taken from the COursera course, we believe we need to point out which scripts we have contributed to: 
+#### As the basic structure of our project was taken from the Coursera course, we believe we need to point out which scripts we have contributed to: 
 
-**Perception Part Description:** `/object_detection/object_detection.py`, `/object_detection/depth_to_pointcloud.py`. 
+**Base:** `main.py`. 
 
-**Global Planner Description:** `/global_planner/misc.py`, `/global_planner/shortest_path_test.py`. 
+**Perception Part:** `/object_detection/object_detection.py`, `/object_detection/depth_to_pointcloud.py`. 
 
-**Local Planner Descriptionn:** `/local_planner/local_planner.py`. 
+**Global Planner:** `/global_planner/misc.py`, `/global_planner/shortest_path_test.py`. 
 
-**Behaviour Planner Description:** `/behavioural_planner/behavioural_planner.py`, `/collision_check/collision_checker.py`. 
+**Local Planner:** `/local_planner/local_planner.py`. 
+
+**Behaviour Planner:** `/behavioural_planner/behavioural_planner.py`, `/collision_check/collision_checker.py`. 
 
 
 ## Integration of all modules
