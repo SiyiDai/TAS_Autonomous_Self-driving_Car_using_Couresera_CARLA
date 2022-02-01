@@ -29,6 +29,7 @@ import live_plotter_helpers.live_plotter as lv  # Custom live plotting library
 from live_plotter_helpers.control_fig_helper import *
 from live_plotter_helpers.trajectory_fig_helper import *
 from live_plotter_helpers.history_helper import *
+from live_plotter_helpers.fig_store import *
 
 from collision_check.get_player_collided_flag import *
 from controller.controller_utils import *
@@ -286,7 +287,8 @@ def exec_waypoint_nav_demo(args):
                     bp._follow_lead_vehicle,
                 )
                 if bp._follow_lead_vehicle:
-                    print("[INFO] Following the lead vehicle, lead vehicle speed: {:0.2f} km/h".format(3.6*lead_car_speed[1]))
+                    if not decelerate_to_stop:
+                        print("[INFO] Following the lead vehicle, lead vehicle speed: {:0.2f} km/h".format(3.6*lead_car_speed[1]))
                 # --------------------------------------------------------------
 
                 if local_waypoints != None:
