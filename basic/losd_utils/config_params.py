@@ -11,7 +11,7 @@ PLOT_BOT = 0.1
 PLOT_WIDTH = 0.8
 PLOT_HEIGHT = 0.8
 
-WAYPOINTS_FILENAME = "params/course4_waypoints.txt"  # waypoint file to load
+WAYPOINTS_FILENAME = "params/route_waypoints.txt"  # waypoint file to load
 DIST_THRESHOLD_TO_LAST_WAYPOINT = 2.0  # some distance from last position before
 # simulation ends
 
