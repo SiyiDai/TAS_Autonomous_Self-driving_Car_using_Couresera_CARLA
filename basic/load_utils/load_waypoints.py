@@ -13,7 +13,7 @@ def load_objects(stopsign_file, stopsign_fencelength, parkedcar_file):
     stopsign_fences = convert_stopsign_lp(stopsign_data, stopsign_fencelength)
     # load parked car
     parkedcar_data = load_parkedcar(parkedcar_file)
-    print(parkedcar_data)
+    # print(parkedcar_data)
     parkedcar_box_pts = obtain_parkedcar_lp(parkedcar_data)
     return stopsign_fences, parkedcar_box_pts
 
