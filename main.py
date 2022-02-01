@@ -287,7 +287,7 @@ def exec_waypoint_nav_demo(args):
                     bp._follow_lead_vehicle,
                 )
                 if bp._follow_lead_vehicle:
-                    print("[INFO] Following the lead vehicle, lead vehicle speed: {:0.2f} m/s".format(3.6*lead_car_speed[1]))
+                    print("[INFO] Following the lead vehicle, lead vehicle speed: {:0.2f} km/h".format(3.6*lead_car_speed[1]))
                 # --------------------------------------------------------------
 
                 if local_waypoints != None:
