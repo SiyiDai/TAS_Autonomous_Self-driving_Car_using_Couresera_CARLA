@@ -83,8 +83,11 @@ Firstly, our computers were not able to run last version of carla because of its
 ****
 ## Description:
 
-Aim of our project is establishg one autonosmous self driving car application using Local Planner, Computer Vision, Global Planner, Behaviour Planner knowledge in Carla enviroment.
-**--> Please FILL HERE** 
+Aim of our project is establishg one autonosmous self driving car application using Local Planner, Computer Vision, Global Planner, Behaviour Planner knowledge in Carla enviroment. --> 
+
+[project_proposal.pdf](Carla_Setup_Guide/Project_Proposal_ Global_and_Local_Motion_Planning_for_Self_driving_Car_using_Carla_Simulator.pdf)
+
+
 
 ## Overall Process of Our Project
 
@@ -97,8 +100,6 @@ Path_optimizer.py and velocity_planner.py were taken from the course assignment 
 We also managed to implement a global planner, which can read map information from Carla server and give an optimal path. 
 
 4. Intergration part is crushed and failed, but we completed our project of perception (for parked car detection), local planner, global planner and behavioural planner.
-
-
 
 
 
@@ -139,12 +140,6 @@ We also managed to implement a global planner, which can read map information fr
 **Local Planner:** `/local_planner/local_planner.py`. 
 
 **Behaviour Planner:** `/behavioural_planner/behavioural_planner.py`, `/collision_check/collision_checker.py`. 
-
-
-## Integration of all modules
-
-This part is failed, so we build one automous driving car using Perception Part, Local Planner Part, Behaviour Planner Part
-**--> Please FILL HERE, describe whole system connection and you can draw one diagram using one online readme editor ( https://pandao.github.io/editor.md/en.html)**
 
 
 
