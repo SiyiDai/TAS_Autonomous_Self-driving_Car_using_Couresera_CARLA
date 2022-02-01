@@ -3,8 +3,8 @@
 import os
 import csv
 import numpy as np
-from basic.losd_utils.load_stopsign import *
-from basic.losd_utils.load_parkedcar import *
+from basic.load_utils.load_stopsign import *
+from basic.load_utils.load_parkedcar import *
 
 
 def load_objects(stopsign_file, stopsign_fencelength, parkedcar_file):
