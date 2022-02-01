@@ -1,5 +1,5 @@
 
-### Collision Check Module
+# Collision Check Module
 
 In this module, **three main functions** for checking collision are implemented:
 
@@ -10,7 +10,9 @@ In this module, **three main functions** for checking collision are implemented:
 - `get_player_collided_flag` obtains collision flag from player. Check if any of the three collision metrics (vehicles, pedestrians, others) from the player are true, if so the player has collided to something.
 
 *The base code of this module is given from coursera course, we implement the parts tagged with **TODO** sessions.*
-#### Logic for collision_check
+
+---
+## Logic for collision_check
 
     paths: A list of paths in the global frame.
         A path is a list of points of the following format:
@@ -36,8 +38,38 @@ Then we assumes each obstacle is approximated by a collection of points of the f
 
 We iterate through the obstacle points, and check **if any of the obstacle points lies within any of our circles**. If so, then the path will collide with an obstacle and the collision_free flag should be set to false for this flag.
 
-*The base code of this function is given from coursera course, we implement the circle calculation part.*
+*The base code of this function is given from coursera course, we implement **the circle calculation part.***
 
 
 
-#### Logic for select_best_path_index
+## Logic for select_best_path_index
+
+Selects the best path in the path set, according to 
+
+1. **how closely it follows the lane centerline**, and 
+
+        score = np.linalg.norm(
+            [goal_state[0] - paths[i][0][-1],
+                goal_state[1] - paths[i][1][-1],])
+
+2. **how far away it is from other paths that are in collision**.
+    
+        score = self._weight * np.linalg.norm(
+            [paths[i][0][-1] - paths[j][0][-1],
+            paths[i][1][-1] - paths[j][1][-1],])
+
+After adding up both score, the best index with the lowest score will be added to the path index.
+
+*The base code of this function is given from coursera course, we implement* 
+
+1. ***Compute the "distance from centerline" score** and*
+
+2. ***Compute the "proximity to other colliding paths" score***
+
+
+## Logic for get_player_collided_flag
+
+Obtains collision flag from player. Check if any of the three collision
+metrics (vehicles, pedestrians, others) from the player are true, if so the
+player has collided to something.
+
