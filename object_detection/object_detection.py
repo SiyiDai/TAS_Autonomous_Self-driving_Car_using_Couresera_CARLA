@@ -38,7 +38,7 @@ def object_detection(image_depth, image_segment, ego_x, ego_y):
     vehicle_pos = [vehicle_x[0], vehicle_y[0], HORIZONTAL_LEVEL]
     print("[INFO] Parked car detected at world map: ", vehicle_pos)
     # print(vehicle_x, vehicle_y)
-    data = write_vehicle_detection_to_txt(vehicle_x, vehicle_y)
+    data = vehicle_detection_list(vehicle_x, vehicle_y)
     # elif segmented_image == PEDESTRIAN_SEG_RANGE:
     #     pedestrian_3d = segmented_image
     #     pedestrian_cen = object_center_detection(pedestrian_3d)
@@ -84,6 +84,19 @@ def obejct_position_world(object_cen, point_cloud, ego_x, ego_y):
     return object_x, object_y
 
 
+def vehicle_detection_list(objectsx, objectsy):
+    for i in range(0, len(objectsx)):
+        locations = []
+        vehicle_position = [objectsx[i], objectsy[i], HORIZONTAL_LEVEL, np.radians(YAW_ANGLE)]
+        vehicle_size = [
+            VEHICLE_BOX_X_RADIUS,
+            VEHICLE_BOX_Y_RADIUS,
+            VEHICLE_BOX_Z_RADIUS,
+        ]
+        locations = vehicle_position + vehicle_size
+    return locations
+
+
 def write_vehicle_detection_to_txt(objectsx, objectsy):
     header = [
         "X(m)",
@@ -107,7 +120,6 @@ def write_vehicle_detection_to_txt(objectsx, objectsy):
             ]
             locations = vehicle_position + vehicle_size
             writer.writerow(locations)
-    return locations
 
 
 def write_pedestrian_detection_to_txt(objectsx, objectsy):
