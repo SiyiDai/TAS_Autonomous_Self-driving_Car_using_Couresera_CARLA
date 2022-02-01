@@ -51,7 +51,7 @@ Aim of our project is establishg one autonosmous self driving car application us
 
 ## Overall Process of Our Project
 
-1. Firstly, we followed courses "Introduction to Self-Driving Cars" and "Motion Planning for Self-Driving Cars" on Coursera to learn about self-driving cars and complete "TODO" tasks in `local_planner/local_planner.py`, `local_planner/behavioural_planner.py` and `collision_check/collision_checker.py`. 
+1. Firstly, we followed courses "Introduction to Self-Driving Cars" and "Motion Planning for Self-Driving Cars" on Coursera to learn about self-driving cars and complete "TODO" tasks in `/local_planner/local_planner.py`, `/behavioural_planner/behavioural_planner.py` and `/collision_check/collision_checker.py`. 
 Path_optimizer.py and velocity_planner.py were taken from the course assignment solution file. We solved all the assigments and watched all the course videos 
 
 2. We managed to use semantic segmentation to distinguish different obstacles on the road, such as vehicles and pedestrians, and find the centroid of the obstacles as a representation of their positions. We call it obstacle detection part and tried to apply it during the driving of the vehicle. The obstacle detection part should be able to, as we planned, detect dynamic obstacles and update their positions in every frame. 
@@ -87,22 +87,19 @@ We also managed to implement a global planner, which can read map information fr
     - Local Planner Part (worked)
     - Behaviour Planner (worked)
     - Controlller Part (worked)
-    - Car Modeling ( It is decided that using car modeling uncessarary for our project, we tuned pid experimentally and our research in internet. )
+    - Car Modeling (It is decided that using car modeling uncessarary for our project, we tuned pid experimentally and our research in internet. )
     - Localization part(found uncessarary)
     - Integration of all modules (failed)
 
+#### As the basic structure of our project was taken from the COursera course, we believe we need to point out which scripts we have contributed to: 
 
-**Perception Part Description:**
+**Perception Part Description:** `/object_detection/object_detection.py`, `/object_detection/depth_to_pointcloud.py`. 
 
-**Global Planner Description:**
+**Global Planner Description:** `/global_planner/misc.py`, `/global_planner/shortest_path_test.py`. 
 
-**Local Planner Descriptionn:**
+**Local Planner Descriptionn:** `/local_planner/local_planner.py`. 
 
-**Behaviour Planner Description:**
-
-**Controller Part:**
-
-**Car Modeling Part: **
+**Behaviour Planner Description:** `/behavioural_planner/behavioural_planner.py`, `/collision_check/collision_checker.py`. 
 
 
 ## Integration of all modules
