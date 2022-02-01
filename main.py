@@ -12,19 +12,19 @@ import time
 import numpy as np
 import controller.controller2d as controller2d
 import local_planner.local_planner as local_planner
-import local_planner.behavioural_planner as behavioural_planner
+import behavioural_planner.behavioural_planner as behavioural_planner
 
 from basic.get_pos import *
-from basic.config_params import *
-from basic.load_stopsign import *
-from basic.load_parkedcar import *
-from basic.load_lead_car import *
-from basic.load_waypoints import *
+from basic.losd_utils.config_params import *
+from basic.losd_utils.load_stopsign import *
+from basic.losd_utils.load_parkedcar import *
+from basic.losd_utils.load_lead_car import *
+from basic.losd_utils.load_waypoints import *
 from basic.argparser_helper import *
 from basic.timer import Timer
 from basic.cal_timestep import *
 from basic.make_carla_settings import *
-from basic.load_config import *
+from basic.losd_utils.load_config import *
 
 import live_plotter_helpers.live_plotter as lv  # Custom live plotting library
 from live_plotter_helpers.control_fig_helper import *
@@ -286,6 +286,8 @@ def exec_waypoint_nav_demo(args):
                     lead_car_state,
                     bp._follow_lead_vehicle,
                 )
+                if bp._follow_lead_vehicle:
+                    print("[INFO] Following the lead vehicle, lead vehicle speed: {:0.2f} m/s".format(3.6*lead_car_speed[1]))
                 # --------------------------------------------------------------
 
                 if local_waypoints != None:
