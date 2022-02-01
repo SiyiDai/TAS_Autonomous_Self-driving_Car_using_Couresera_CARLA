@@ -9,6 +9,7 @@ This module consist of three functions:
 
 *The base code of this module is given from coursera course, we implement the parts tagged with **TODO** sessions.*
 
+---
 #### Logic for get_goal_state_set
     inputs:
     goal_index: Goal index for the vehicle to reach
