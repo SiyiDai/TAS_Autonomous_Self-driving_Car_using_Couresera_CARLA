@@ -17,7 +17,6 @@ import behavioural_planner.behavioural_planner as behavioural_planner
 from basic.get_pos import *
 from basic.load_utils.config_params import *
 from basic.load_utils.load_stopsign import *
-from basic.load_utils.load_parkedcar import *
 from basic.load_utils.load_lead_car import *
 from basic.load_utils.load_waypoints import *
 from basic.argparser_helper import *
