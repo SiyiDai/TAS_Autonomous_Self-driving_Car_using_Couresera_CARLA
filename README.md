@@ -98,6 +98,24 @@ We also managed to implement a global planner, which can read map information fr
 4. Intergration part is crushed and failed, but we completed our project of perception (for parked car detection), local planner, global planner and behavioural planner.
 
 
+### Result:
+
+The **Control figure** contains the changes of **Forward Speed**, **Throttle**, **Brake** and **Steer**.
+
+In our case, because of the speed limitation as 30 km/h, the forward speed is mainly caused by throttle control. The brake value stays as 0.
+
+![alt text](live_plotter_helpers/controller_output/forward_speed.png)
+![alt text](live_plotter_helpers/controller_output/throttle_output.png)
+![alt text](live_plotter_helpers/controller_output/brake_output.png)
+![alt text](live_plotter_helpers/controller_output/steer_output.png)
+
+The **Trajectory figure** visualizes the important static information in the simulation scene, including **waypoints of route, stop sign, and detected parked car**. 
+
+The dynamic object, **ego vehicle as well as lead vehicle**, are also visualized here.
+
+The **start point** and the **end point** is taged in the route.
+
+![alt text](live_plotter_helpers/controller_output/trajectory.png)
 
 ## Contents
 - Our planned algorithm:
@@ -142,6 +160,7 @@ We also managed to implement a global planner, which can read map information fr
 **Collision Check:** `/collision_check/collison_checker.py`, `/collision_check/get_player_collided_flag.py`
 
 **Basic and Live Plotter Helper are rewritten from the foundation of couresera structure**
+
 
 
 
