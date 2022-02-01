@@ -15,16 +15,16 @@ import local_planner.local_planner as local_planner
 import behavioural_planner.behavioural_planner as behavioural_planner
 
 from basic.get_pos import *
-from basic.losd_utils.config_params import *
-from basic.losd_utils.load_stopsign import *
-from basic.losd_utils.load_parkedcar import *
-from basic.losd_utils.load_lead_car import *
-from basic.losd_utils.load_waypoints import *
+from basic.load_utils.config_params import *
+from basic.load_utils.load_stopsign import *
+from basic.load_utils.load_parkedcar import *
+from basic.load_utils.load_lead_car import *
+from basic.load_utils.load_waypoints import *
 from basic.argparser_helper import *
 from basic.timer import Timer
 from basic.cal_timestep import *
 from basic.make_carla_settings import *
-from basic.losd_utils.load_config import *
+from basic.load_utils.load_config import *
 
 import live_plotter_helpers.live_plotter as lv  # Custom live plotting library
 from live_plotter_helpers.control_fig_helper import *
