@@ -84,7 +84,6 @@ waypoints:  current waypoints to track. (global frame)
             example:
                 waypoints[2][1]:
                 returns the 3rd waypoint's y position
-
                 waypoints[5]:
                 returns [x5, y5, v5] (6th waypoint)
             closest_index: index of the waypoint which is closest to the vehicle.
