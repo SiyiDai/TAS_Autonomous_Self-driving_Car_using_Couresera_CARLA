@@ -38,6 +38,8 @@ python main.py      # (in the root folder of scripts)
 
 **Note that there are difficulties running Carla with a virtual machine.**
 
+**If errors occur, pease refer to Carla setup guide in folder /Carla_Setup_Guide.**
+
 ****
 
 
