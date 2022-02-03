@@ -143,7 +143,7 @@ if __name__ == "__main__":
         G.add_node(str(i), pos=(X[i,0], X[i,1]))
     pos = nx.get_node_attributes(G, 'pos')
     #G.add_nodes_from(indices[:,0])
-
+    plt.figure(1)
     # add weighted edges
     for i in range(len(edges1)):
         G.add_edge(edges1[i][0],edges1[i][1], weight=dist(edges1[i][0], edges1[i][1]))
@@ -159,9 +159,10 @@ if __name__ == "__main__":
     for i in range(len(astar_path) - 1):
         G1.add_edge(astar_path[i],astar_path[i+1])
     nx.draw_networkx_edges(G1, pos, edge_color='r', width=10)
-    plt.show()
+
+    plt.figure(2)
     plot_path(astar_path)
-    #plt.show()
+    plt.show()
 
 
 
